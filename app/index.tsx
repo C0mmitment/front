@@ -8,5 +8,5 @@ export default function Index() {
     return <Redirect href="/(storybook)" />;
   }
 
-  return <Redirect href="/(pages)" />;
+  return <Redirect href="/home" />;
 }

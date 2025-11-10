@@ -8,6 +8,7 @@ const meta = {
   component: MyButton,
   args: {
     text: "Hello world",
+    onPress: () => alert("Button pressed!"),
   },
   decorators: [
     (Story) => (
