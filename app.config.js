@@ -31,5 +31,31 @@ export default ({ config }) => ({
     favicon: "./assets/favicon.png",
     bundler: "metro",
   },
-  plugins: ["expo-router", "expo-font"],
+  plugins: [
+    "expo-router",
+    "expo-font",
+    [
+      "expo-camera",
+      {
+        cameraPermission: "Allow $(PRODUCT_NAME) to access your camera",
+        microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone",
+        recordAudioAndroid: true,
+      },
+    ],
+    [
+      "expo-media-library",
+      {
+        "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+        "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+        "isAccessMediaLocationEnabled": true,
+        "granularPermissions": ["audio", "photo"]
+      }
+    ],
+    [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+  ],
 });
