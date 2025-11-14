@@ -1,6 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import * as ImagePicker from 'expo-image-picker';
 import { useState, useRef } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -9,8 +10,9 @@ export default function HomePage() {
   const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
+  const [image, setImage] = useState<string | null>(null);
 
-  // カメラの権限がない場合の表示
+  // 権限チェック
   if (!permission) return <View className="flex-1 bg-black" />;
   if (!permission.granted) {
     return (
@@ -28,12 +30,23 @@ export default function HomePage() {
     );
   }
 
-  // 写真フォルダを開く関数
-  function openPhotoFolder() {
-    console.log("Open photo folder");
+  // 写真フォルダを開く
+  async function openPhotoFolder() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   }
 
-  // 写真を端末に保存する関数
+  // 写真撮影
   async function takePicture() {
     if (!cameraRef.current) return;
     const photo = await cameraRef.current.takePictureAsync({
@@ -44,7 +57,7 @@ export default function HomePage() {
     console.log(photo.uri);
   }
 
-  // カメラの向きを切り替える関数
+  // カメラ切り替え
   function toggleCameraFacing() {
     setFacing((cur) => (cur === "back" ? "front" : "back"));
   }
@@ -52,30 +65,42 @@ export default function HomePage() {
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-black">
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing} />
-      {/* nativewindが効かないためstyle適用 */}
-      <View 
-        style={{ 
-          position: 'absolute', 
-          bottom: 32, 
-          width: '100%', 
-          flexDirection: 'row', 
-          justifyContent: 'center', 
+
+      {/* ボタン UI */}
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 32,
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'white',
           paddingVertical: 20,
           gap: 60,
         }}
       >
+        {/* 画像アイコン */}
         <TouchableOpacity className="w-15 items-center mx-3" onPress={openPhotoFolder}>
           <FontAwesome name="picture-o" size={32} color="black" />
         </TouchableOpacity>
+        {/* シャッターアイコン */}
         <TouchableOpacity className="w-15 items-center mx-3" onPress={takePicture}>
           <FontAwesome6 name="circle" size={60} color="black" />
         </TouchableOpacity>
+        {/* 内外切り替えアイコン */}
         <TouchableOpacity className="w-15 items-center mx-3" onPress={toggleCameraFacing}>
           <FontAwesome6 name="camera-rotate" size={32} color="black" />
         </TouchableOpacity>
       </View>
+
+      {/* 選択した画像表示 */}
+      {image && (
+        <Image
+          source={{ uri: image }}
+          className="absolute bottom-0 w-full h-60 rounded-t-2xl"
+        />
+      )}
     </SafeAreaView>
   );
 }
