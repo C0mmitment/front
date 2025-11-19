@@ -1,8 +1,8 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
 import { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -12,6 +12,7 @@ export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [image, setImage] = useState<string | null>(null);
+  const router = useRouter();
 
   // 権限チェック
   if (!permission) return <View className="flex-1 bg-black" />;
@@ -56,7 +57,10 @@ export default function HomePage() {
       exif: true,
     });
     console.log(photo.uri);
-    MediaLibrary.saveToLibraryAsync(photo.uri);
+    router.push({
+      pathname: "/advice/advice",
+      params: { uri: photo.uri },
+    });
   }
 
   // カメラ切り替え
