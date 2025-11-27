@@ -1,7 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from 'expo-image-picker';
 import { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -17,19 +17,17 @@ export default function HomePage() {
   // 権限チェック
   if (!permission) return <View className="flex-1 bg-black" />;
   if (!permission.granted) {
-    return (
-      <View className="flex-1 justify-center items-center bg-black">
-        <Text className="text-white text-lg mb-4">
-          カメラを使用するための権限が必要です
-        </Text>
-        <TouchableOpacity
-          className="bg-blue-500 px-6 py-3 rounded-xl"
-          onPress={requestPermission}
-        >
-          <Text className="text-white font-bold text-base">権限を許可する</Text>
-        </TouchableOpacity>
-      </View>
+    Alert.alert(
+      '"TotteMe!"がカメラへのアクセスを求めています。',
+      "",
+      [
+        { text: "キャンセル", style: "cancel" },
+        {
+          text: "許可する",   onPress: () => requestPermission(),
+        },
+      ]
     );
+    return <View className="flex-1 bg-black" />;
   }
 
   // 写真フォルダを開く
