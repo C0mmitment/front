@@ -66,52 +66,22 @@ export default function AdvicePage() {
       {/* 画像プレビュー */}
       <View className="flex-1 items-center justify-center">
         {uri ? (
-          <View
-            style={{
-              width: "80%",
-              height: "80%",
-              position: "relative",  // ← これで重ねられる
-            }}
-          >
-            {/* 枠組み */}
-            <Animated.View
-              style={[
-                {
-                  position: "absolute",
-                  top: "20%",
-                  left: "15%",
-                  width: "70%",
-                  height: "60%",
-                  borderWidth: 4,
-                  borderColor: "yellow",
-                  borderRadius: 12,
-                  zIndex: 10,
-                },
-                boxStyle,
-              ]}
-            />
+          <View className="w-[80%] h-[80%] relative">
             {/* 撮った画像 */}
             <Image
               source={{ uri }}
-              style={{ width: "100%", height: "100%" }}
+               className="w-full h-full"
               resizeMode="cover"
+            />
+            {/* 枠組み */}
+            <Animated.View
+              className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl z-10"
+              style={boxStyle}
             />
             {/* 矢印 */}
             <Animated.Text
-              style={[
-                {
-                  position: "absolute",
-                  left: 10,       // 右側に固定
-                  top: "50%",      // 高さは中央
-                  transform: [{ translateY: -12 }],
-                  fontSize: 40,
-                  color: "yellow",
-                  fontWeight: "bold",
-                  textShadowColor: "rgba(0,0,0,0.5)",
-                  textShadowRadius: 4,
-                },
-                arrowStyle,        // ← アニメーション
-              ]}
+              className="absolute left-2 top-1/2 text-[40px] text-yellow-300 font-bold"
+              style={arrowStyle}
             >
               ←
             </Animated.Text>
@@ -127,7 +97,7 @@ export default function AdvicePage() {
       </View>
 
       {/* ボタン表示 */}
-      <View style={{ flexDirection: 'row', padding: 20, gap: 12, justifyContent: 'center' }}>
+      <View className="flex-row p-5 gap-3 justify-center">
         <Button
           text="撮影に戻る"
           onPress={() => router.back()}
