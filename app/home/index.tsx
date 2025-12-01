@@ -39,10 +39,13 @@ export default function HomePage() {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+
+      router.push({
+        pathname: "/photo-selected/photo-selected",
+        params: { uri },
+      });
     }
   }
 
@@ -97,14 +100,6 @@ export default function HomePage() {
           <FontAwesome6 name="camera-rotate" size={32} color="black" />
         </TouchableOpacity>
       </View>
-
-      {/* 選択した画像表示 */}
-      {image && (
-        <Image
-          source={{ uri: image }}
-          className="absolute bottom-0 w-full h-60 rounded-t-2xl"
-        />
-      )}
     </SafeAreaView>
   );
 }
