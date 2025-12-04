@@ -1,7 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Button } from "../components/Button/Button";
 import { useState, useEffect } from "react";
 import * as MediaLibrary from 'expo-media-library';
 import Animated, {
@@ -11,14 +10,40 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { Button } from "../components/Button/Button";
+import { getPhotoAdvice } from "../api/advice-api";
 
 export default function AdvicePage() {
   const { uri } = useLocalSearchParams<{ uri: string }>();
   const [advice, setAdvice] = useState<string>("ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。");
+  const [isLoading, setIsLoading] = useState(false);
 
   // アニメーション用変数
   const arrowX = useSharedValue(0);       // 矢印（Ⅹ軸）
   const boxOpacity = useSharedValue(0.6); // 枠組み
+
+  // アドバイス取得
+  useEffect(() => {
+    if (!uri) return;
+
+    const fetchAdvice = async () => {
+      try {
+        setIsLoading(true);
+
+        // とりあえずfalseを送る
+        const res = await getPhotoAdvice(uri, false);
+
+        setAdvice(res.advice);
+      } catch (error) {
+        console.error(error);
+        setAdvice("アドバイスの取得に失敗しました。時間をおいて再度お試しください。");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAdvice();
+  }, [uri]);
 
   useEffect(() => {
     // 矢印
@@ -70,7 +95,7 @@ export default function AdvicePage() {
             {/* 撮った画像 */}
             <Image
               source={{ uri }}
-               className="w-full h-full"
+              className="w-full h-full"
               resizeMode="cover"
             />
             {/* 枠組み */}
@@ -92,9 +117,11 @@ export default function AdvicePage() {
       </View>
 
       {/* アドバイス表示 */}
-      <View className="items-center px-8">
+      {isLoading ? (
+        <Text className="text-gray-500">AIが写真を解析中です...</Text>
+      ) : (
         <Text className="text-red-500">{advice}</Text>
-      </View>
+      )}
 
       {/* ボタン表示 */}
       <View className="flex-row p-5 gap-3 justify-center">
