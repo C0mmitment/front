@@ -1,7 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Button } from "../components/Button/Button";
 import { useState, useEffect } from "react";
 import * as MediaLibrary from 'expo-media-library';
 import Animated, {
@@ -11,10 +10,13 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { Button } from "../components/Button/Button";
+import { getPhotoAdvice } from "../api/advice-api";
 
 export default function AdvicePage() {
   const { uri } = useLocalSearchParams<{ uri: string }>();
   const [advice, setAdvice] = useState<string>("ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。");
+  const [isLoading, setIsLoading] = useState(false); // ローディング中なんか表示する用
 
   // アニメーション用変数
   const arrowX = useSharedValue(0);       // 矢印（Ⅹ軸）
