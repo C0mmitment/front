@@ -1,6 +1,6 @@
 // app/components/ShutterScroll.tsx
 import React, { useRef, useState } from "react";
-import { Dimensions, FlatList, TouchableOpacity, View } from "react-native";
+import { Dimensions, FlatList, TouchableOpacity, View, Image } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 type Props = {
@@ -10,9 +10,9 @@ type Props = {
 
 export default function ShutterScroll({ onPress, className }: Props) {
   const shutterButtons = [
-    { id: "normal", icon: "circle", size: 60 },
-    { id: "people", icon: "user-group", size: 50 },
-    { id: "food", icon: "bowl-food", size: 60 },
+    { id: "normal", source: require("../assets/shutter-circle.png"), size: 80 },
+    { id: "people", source: require("../assets/shutter-people.png"), size: 80 },
+    { id: "food", source: require("../assets/shutter-food.png"), size: 80 },
   ];
 
   const shutterWidth = 100;
@@ -56,12 +56,16 @@ export default function ShutterScroll({ onPress, className }: Props) {
         <TouchableOpacity
           className="items-center justify-center"
           style={{ width: shutterWidth }}
-          onPress={() => handleSelect(item.id)}
+          onPress={() => { if (selected === item.id) onPress(item.id); }}
         >
-          <FontAwesome6
-            name={item.icon}
-            size={item.size}
-            color={selected === item.id ? "red" : "black"}
+          <Image
+            source={item.source}
+            style={{
+              width: item.size,
+              height: item.size,
+              tintColor: selected === item.id ? "lightblue" : "gray",
+            }}
+            resizeMode="contain"
           />
         </TouchableOpacity>
       )}
