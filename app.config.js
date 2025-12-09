@@ -4,7 +4,7 @@ export default ({ config }) => ({
   slug: "expo-template-blank-typescript",
   version: "1.0.0",
   orientation: "portrait",
-  icon: "./assets/icon.png",
+  icon: "./assets/totteme-icon.png",
   scheme: "myapp",
   extra: {
     storybookEnabled: process.env.STORYBOOK_ENABLED,
