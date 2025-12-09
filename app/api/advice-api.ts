@@ -26,6 +26,7 @@ export async function getPhotoAdvice(imageUri: string, gathering: boolean = fals
   // 追加したいフィールド
   formData.append("uuid", uuid.v4());                         // uuid
   formData.append("gathering", gathering ? "true" : "false"); // 現在地の利用許可
+  formData.append("category", "person");                      // カテゴリー
 
   const res = await clientApi.post<PhotoAdviceResponse>("/middle/advice",formData);
 
