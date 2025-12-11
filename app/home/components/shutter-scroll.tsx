@@ -1,7 +1,7 @@
 // app/components/ShutterScroll.tsx
 import React, { useRef, useState } from "react";
 import { Dimensions, FlatList, TouchableOpacity, View, Image } from "react-native";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { colors } from "../../constans/color";
 
 type Props = {
   onPress: (mode: string) => void;
@@ -63,7 +63,7 @@ export default function ShutterScroll({ onPress, className }: Props) {
             style={{
               width: item.size,
               height: item.size,
-              tintColor: selected === item.id ? "lightblue" : "gray",
+              tintColor: selected === item.id ? colors.primary : colors.secondary,
             }}
             resizeMode="contain"
           />

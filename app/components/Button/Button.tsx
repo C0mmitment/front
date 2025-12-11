@@ -14,8 +14,8 @@ const buttonStyles = cva(
   {
     variants: {
       color: {
-        default: "bg-black web:hover:bg-gray-700 native:active:bg-gray-700",
-        cancel: "bg-white web:hover:bg-gray-100 native:active:bg-gray-100 border",
+        default: "bg-primary web:hover:bg-gray-700 native:active:bg-gray-700",
+        cancel: "text-secondary bg-white web:hover:bg-gray-100 native:active:bg-gray-100 border border-secondary",
       },
       size: {
         sm: "px-4 py-2 w-28",
@@ -36,7 +36,7 @@ const textStyles = cva(
     variants: {
       color: {
         default: "text-white",
-        cancel: "text-black",
+        cancel: "text-secondary",
       },
       size: {
         sm: "text-base",

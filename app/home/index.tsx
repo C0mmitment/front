@@ -7,6 +7,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useCameraActions } from "../hooks/useCameraActions";
 import ShutterScroll from "./components/shutter-scroll";
+import { colors } from "../constans/color";
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -50,11 +51,11 @@ export default function HomePage() {
         <View className="bg-white flex-row items-center justify-between pb-5">
           {/* 画像アイコン */}
           <TouchableOpacity className="w-15 items-center mx-3" onPress={openPhotoFolder}>
-            <FontAwesome name="picture-o" size={32} color="black" />
+            <FontAwesome name="picture-o" size={32} color={colors.secondary} />
           </TouchableOpacity>
           {/* 内外切り替えアイコン */}
           <TouchableOpacity className="w-15 items-center mx-3" onPress={toggleCameraFacing}>
-            <FontAwesome6 name="camera-rotate" size={32} color="black" />
+            <FontAwesome6 name="camera-rotate" size={32} color={colors.secondary} />
           </TouchableOpacity>
         </View>
       </View>
