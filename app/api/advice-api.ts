@@ -16,7 +16,10 @@ export type PhotoAdviceResponse = {
   visual_cues: VisualCue[];
 };
 
-export async function getPhotoAdvice(imageUri: string, gathering: boolean = false): Promise<PhotoAdviceResponse> {
+// 緯度経度
+type LocationPayload = { lat: number; lon: number } | null;
+
+export async function getPhotoAdvice(imageUri: string, gathering: boolean = false, location: LocationPayload): Promise<PhotoAdviceResponse> {
 
   const targetSize = 1024; // 変換サイズ
   const manipResult = await ImageManipulator.manipulateAsync(
@@ -49,6 +52,10 @@ export async function getPhotoAdvice(imageUri: string, gathering: boolean = fals
   formData.append("uuid", String(uuid.v4()));                 // uuid
   formData.append("gathering", gathering ? "true" : "false"); // 現在地の利用許可
   formData.append("category", "person");                      // カテゴリー
+  if (gathering && location) {                                // 現在地
+    formData.append("lat", String(location.lat));
+    formData.append("long", String(location.lon));
+  }
 
   try {
     const res = await axios.post("http://10.200.2.92:3535/api/v1/middle/advice", formData, {
