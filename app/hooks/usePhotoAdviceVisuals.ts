@@ -49,7 +49,7 @@ const DIRECTION_CONFIG: Record<
 
 export function usePhotoAdviceVisuals(options: Options = {}) {
   const { direction } = options;
-  const dir: Direction = direction ?? "backward";
+  const dir: Direction = direction ?? "left";
   const config = DIRECTION_CONFIG[dir];
 
   const arrowX = useSharedValue(0);
