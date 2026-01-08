@@ -2,6 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
+import * as Location from "expo-location";
 import * as MediaLibrary from 'expo-media-library';
 import Animated from "react-native-reanimated";
 import { Button } from "../components/Button/Button";
@@ -29,8 +30,31 @@ export default function AdvicePage() {
       try {
         setIsLoading(true);
 
-        // とりあえずtrueを送る
-        const res = await getPhotoAdvice(uri, true);
+        // 現在地取得許可(とりあえずtrue)
+        const gathering = true;
+
+        // 緯度経度
+        let loc: { lat: number; lon: number } | null = null;
+
+        // 現在地取得許可が出てれば
+        if (gathering) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status === "granted") {
+          const pos = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+
+          loc = {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+          };
+        } else {
+          loc = null;
+        }
+      }
+
+        const res = await getPhotoAdvice(uri, gathering, loc);
         setAdvice(res.analysis.advice);
         // とりあえず先頭だけ使う
         setVisualCue(res.analysis.visual_cues?.[0] ?? null);
