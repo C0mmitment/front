@@ -29,12 +29,11 @@ export default function AdvicePage() {
       try {
         setIsLoading(true);
 
-        // とりあえずfalseを送る
-        const res = await getPhotoAdvice(uri, false);
-
-        setAdvice(res.advice);
+        // とりあえずtrueを送る
+        const res = await getPhotoAdvice(uri, true);
+        setAdvice(res.analysis.advice);
         // とりあえず先頭だけ使う
-        setVisualCue(res.visual_cues?.[0] ?? null);
+        setVisualCue(res.analysis.visual_cues?.[0] ?? null);
       } catch (error) {
         console.error(error);
         setAdvice("アドバイスの取得に失敗しました。時間をおいて再度お試しください。");
@@ -67,10 +66,12 @@ export default function AdvicePage() {
             />
 
             {/* 枠 */}
-            <Animated.View
-              className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
-              style={boxStyle}
-            />
+            {isDepth && (
+              <Animated.View
+                className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
+                style={boxStyle}
+              />
+            )}
 
             {/* 矢印 */}
             {!isDepth && (
