@@ -58,7 +58,7 @@ export async function getPhotoAdvice(imageUri: string, gathering: boolean = fals
   }
 
   try {
-    const res = await axios.post("http://10.200.2.92:3535/api/v1/middle/advice", formData, {
+    const res = await clientApi.post("/analysis/advice", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
