@@ -1,17 +1,22 @@
-// app/home/index.tsx
-import React, { useState } from "react";
+// app/home/home.tsx
+import React, { useState, useEffect } from "react";
 import { View, Alert, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useCameraActions } from "../hooks/useCameraActions";
 import ShutterScroll from "./components/shutter-scroll";
+import SettingDrawer from "./components/SettingDrawer";
 import { colors } from "../constans/color";
+import { useLocationSetting } from "../hooks/useLocationSetting";
+import { useFirstLaunchFlag } from "../hooks/useFirstLaunchFlag";
 import type { CameraMode } from "../types/camera";
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [mode, setMode] = useState<CameraMode>("normal");
 
   const {
@@ -21,6 +26,50 @@ export default function HomePage() {
     openPhotoFolder,
     toggleCameraFacing,
   } = useCameraActions();
+
+  const {
+    locationEnabled,    // 現在地利用の状態
+    setLocationEnabled, // ON/OFF切り替え
+    isLoaded            // 読み込み終了フラグ
+  } = useLocationSetting();
+
+  const {
+    hasSeen,
+    isLoaded: firstLoaded,
+    markSeen
+  } = useFirstLaunchFlag();
+
+  useEffect(() => {
+    // 読み込みが揃うまで何もしない
+    if (!firstLoaded) return;
+    if (!isLoaded) return;
+
+    // 初回だけ
+    if (!hasSeen) {
+      Alert.alert(
+        "位置情報の利用について",
+        "撮影場所の記録・ヒートマップ作成に使用します。あとから設定で変更できます。",
+        [
+          {
+            text: "今はしない",
+            style: "cancel",
+            onPress: async () => {
+              await setLocationEnabled(false);
+              await markSeen();
+            },
+          },
+          {
+            text: "OK",
+            onPress: async () => {
+              await setLocationEnabled(true);
+              await markSeen();
+            },
+          },
+        ]
+      );
+    }
+  }, [firstLoaded, isLoaded, hasSeen, markSeen, setLocationEnabled]);
+
 
   // 権限チェック
   if (!permission) return <View className="flex-1 bg-black" />;
@@ -36,9 +85,28 @@ export default function HomePage() {
     return <View className="flex-1 bg-black" />;
   }
 
+  // 権限読み込み中は何も出さない
+  if (!isLoaded) return <View className="flex-1 bg-black" />;
+
   return (
     <SafeAreaView className="flex-1 bg-black">
+
+      {/* 上部 UI */}
+      <View className="bg-white px-4 py-5 flex-row items-center justify-end">
+        <TouchableOpacity onPress={() => setSettingsOpen(true)}>
+          <Ionicons name="settings-sharp" size={32} color={colors.secondary} />
+        </TouchableOpacity>
+      </View>
+
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing} />
+
+      {/* 設定パネル */}
+      <SettingDrawer
+        visible={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        locationEnabled={locationEnabled}
+        onChangeLocationEnabled={setLocationEnabled}
+      />
 
       {/* 下部 UI */}
       <View className="absolute bottom-10 w-full">
