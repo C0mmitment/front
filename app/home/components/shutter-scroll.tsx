@@ -1,24 +1,30 @@
-// app/components/ShutterScroll.tsx
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Dimensions, FlatList, TouchableOpacity, View, Image } from "react-native";
 import { colors } from "../../constans/color";
+import type { CameraMode } from "../../types/camera";
 
 type Props = {
-  onPress: (mode: string) => void;
+  selectedMode: CameraMode;
+  onSelectMode: (mode: CameraMode) => void;
+  onShutterPress: (mode: CameraMode) => void;
   className?: string;
 };
 
-export default function ShutterScroll({ onPress, className }: Props) {
-  const shutterButtons = [
+export default function ShutterScroll({
+  selectedMode,
+  onSelectMode,
+  onShutterPress,
+  className,
+}: Props) {
+  const shutterButtons: { id: CameraMode; source: any; size: number }[] = [
     { id: "normal", source: require("../assets/shutter-circle.png"), size: 80 },
-    { id: "people", source: require("../assets/shutter-people.png"), size: 80 },
+    { id: "person", source: require("../assets/shutter-people.png"), size: 80 },
     { id: "food", source: require("../assets/shutter-food.png"), size: 80 },
   ];
 
   const shutterWidth = 100;
   const shutterSpacing = 20;
   const screenWidth = Dimensions.get("window").width;
-
   const sideMargin = (screenWidth - shutterWidth) / 2;
 
   const snapOffsets = shutterButtons.map(
@@ -26,16 +32,6 @@ export default function ShutterScroll({ onPress, className }: Props) {
   );
 
   const shutterRef = useRef<FlatList>(null);
-  const [selected, setSelected] = useState(shutterButtons[0].id);
-
-  function handleSelect(id: string) {
-    setSelected(id);
-
-    const index = shutterButtons.findIndex((b) => b.id === id);
-    shutterRef.current?.scrollToIndex({ index, animated: true });
-
-    onPress(id); // ← 親に通知！
-  }
 
   return (
     <FlatList
@@ -49,21 +45,28 @@ export default function ShutterScroll({ onPress, className }: Props) {
         paddingRight: sideMargin - shutterSpacing / 2,
         alignItems: "center",
       }}
-      ItemSeparatorComponent={() => (
-        <View style={{ width: shutterSpacing }} />
-      )}
+      ItemSeparatorComponent={() => <View style={{ width: shutterSpacing }} />}
       renderItem={({ item }) => (
         <TouchableOpacity
           className="items-center justify-center"
           style={{ width: shutterWidth }}
-          onPress={() => { if (selected === item.id) onPress(item.id); }}
+          onPress={() => {
+            if (item.id === selectedMode) {
+              onShutterPress(item.id); // 撮影
+            } else {
+              onSelectMode(item.id);  // モード変更
+              const index = shutterButtons.findIndex((b) => b.id === item.id);
+              shutterRef.current?.scrollToIndex({ index, animated: true });
+            }
+          }}
         >
           <Image
             source={item.source}
             style={{
               width: item.size,
               height: item.size,
-              tintColor: selected === item.id ? colors.primary : colors.secondary,
+              tintColor:
+                selectedMode === item.id ? colors.primary : colors.secondary,
             }}
             resizeMode="contain"
           />
@@ -81,7 +84,7 @@ export default function ShutterScroll({ onPress, className }: Props) {
           event.nativeEvent.contentOffset.x /
             (shutterWidth + shutterSpacing)
         );
-        setSelected(shutterButtons[index].id);
+        onSelectMode(shutterButtons[index].id);
       }}
       ref={shutterRef}
     />

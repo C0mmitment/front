@@ -10,9 +10,13 @@ import { getPhotoAdvice } from "../api/advice-api";
 import type { VisualCue } from "../api/advice-api";
 import { usePhotoAdviceVisuals } from "../hooks/usePhotoAdviceVisuals";
 import ArrowImg from "./assets/arrow.png";
+import type { CameraMode } from "../types/camera";
 
 export default function AdvicePage() {
-  const { uri } = useLocalSearchParams<{ uri: string }>();
+  const { uri, mode } = useLocalSearchParams<{
+    uri: string;
+    mode: CameraMode;
+  }>();
   const [advice, setAdvice] = useState<string>("ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。");
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
@@ -54,7 +58,7 @@ export default function AdvicePage() {
         }
       }
 
-        const res = await getPhotoAdvice(uri, gathering, loc);
+        const res = await getPhotoAdvice(uri, gathering, loc, mode);
         setAdvice(res.analysis.advice);
         // とりあえず先頭だけ使う
         setVisualCue(res.analysis.visual_cues?.[0] ?? null);
