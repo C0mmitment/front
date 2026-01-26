@@ -1,5 +1,5 @@
-// app/home/home.tsx
-import React from "react";
+// app/home/index.tsx
+import React, { useState } from "react";
 import { View, Alert, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -8,9 +8,11 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useCameraActions } from "../hooks/useCameraActions";
 import ShutterScroll from "./components/shutter-scroll";
 import { colors } from "../constans/color";
+import type { CameraMode } from "../types/camera";
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
+  const [mode, setMode] = useState<CameraMode>("normal");
 
   const {
     cameraRef,
@@ -41,12 +43,9 @@ export default function HomePage() {
       {/* 下部 UI */}
       <View className="absolute bottom-10 w-full">
         <ShutterScroll
-          onPress={(mode) => {
-            if (mode === "normal") takePicture();
-            if (mode === "people") takePicture();
-            if (mode === "food") takePicture();
-          }}
-          className="py-5"
+          selectedMode={mode}
+          onSelectMode={setMode}
+          onShutterPress={takePicture}
         />
         <View className="bg-white flex-row items-center justify-between pb-5">
           {/* 画像アイコン */}

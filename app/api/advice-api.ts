@@ -1,7 +1,9 @@
+// app/api/advice-api.ts
 import uuid from 'react-native-uuid';
 import * as ImageManipulator from 'expo-image-manipulator';
 import clientApi from "./client-api";
 import axios from "axios";
+import type { CameraMode } from "../types/camera";
 
 // 視覚的なアドバイス
 export type VisualCue = {
@@ -19,7 +21,12 @@ export type PhotoAdviceResponse = {
 // 緯度経度
 type LocationPayload = { lat: number; lon: number } | null;
 
-export async function getPhotoAdvice(imageUri: string, gathering: boolean = false, location: LocationPayload): Promise<PhotoAdviceResponse> {
+export async function getPhotoAdvice(
+  imageUri: string,
+  gathering: boolean,
+  location: LocationPayload,
+  category: CameraMode
+): Promise<PhotoAdviceResponse> {
 
   const targetSize = 1024; // 変換サイズ
   const manipResult = await ImageManipulator.manipulateAsync(
@@ -51,7 +58,7 @@ export async function getPhotoAdvice(imageUri: string, gathering: boolean = fals
   // 追加したいフィールド
   formData.append("uuid", String(uuid.v4()));                 // uuid
   formData.append("gathering", gathering ? "true" : "false"); // 現在地の利用許可
-  formData.append("category", "person");                      // カテゴリー
+  formData.append("category", category);                      // カテゴリー
   if (gathering && location) {                                // 現在地
     formData.append("lat", String(location.lat));
     formData.append("long", String(location.lon));
