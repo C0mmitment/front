@@ -12,10 +12,12 @@ import SettingDrawer from "./components/SettingDrawer";
 import { colors } from "../constans/color";
 import { useLocationSetting } from "../hooks/useLocationSetting";
 import { useFirstLaunchFlag } from "../hooks/useFirstLaunchFlag";
+import type { CameraMode } from "../types/camera";
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mode, setMode] = useState<CameraMode>("normal");
 
   const {
     cameraRef,
@@ -109,12 +111,9 @@ export default function HomePage() {
       {/* 下部 UI */}
       <View className="absolute bottom-10 w-full">
         <ShutterScroll
-          onPress={(mode) => {
-            if (mode === "normal") takePicture();
-            if (mode === "people") takePicture();
-            if (mode === "food") takePicture();
-          }}
-          className="py-5"
+          selectedMode={mode}
+          onSelectMode={setMode}
+          onShutterPress={takePicture}
         />
         <View className="bg-white flex-row items-center justify-between pb-5">
           {/* 画像アイコン */}

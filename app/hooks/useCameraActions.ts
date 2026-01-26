@@ -3,13 +3,14 @@ import { useRef, useState } from "react";
 import { CameraView } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
+import type { CameraMode } from "../types/camera";
 
 export function useCameraActions() {
   const cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"back" | "front">("back");
 
   // 写真撮影
-  async function takePicture() {
+  async function takePicture(mode: CameraMode) {
     if (!cameraRef.current) return;
 
     const photo = await cameraRef.current.takePictureAsync({
@@ -20,7 +21,10 @@ export function useCameraActions() {
 
     router.push({
       pathname: "/advice/advice",
-      params: { uri: photo.uri },
+      params: { 
+        uri: photo.uri,
+        mode: mode,
+      },
     });
   }
 
