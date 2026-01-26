@@ -11,6 +11,7 @@ import type { VisualCue } from "../api/advice-api";
 import { usePhotoAdviceVisuals } from "../hooks/usePhotoAdviceVisuals";
 import ArrowImg from "./assets/arrow.png";
 import type { CameraMode } from "../types/camera";
+import PhotoTips from "../components/Tips/tips";
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
@@ -123,12 +124,14 @@ export default function AdvicePage() {
       </View>
 
       {/* アドバイス表示 */}
-      {isLoading ? (
-        <Text className="text-gray-500">AIが写真を解析中です...</Text>
-      ) : (
-        <Text className="text-red-500">{advice}</Text>
-      )}
-
+      <View className="m-4">
+        {isLoading ? (
+          <PhotoTips />
+        ) : (
+          <Text className="text-red-500">{advice}</Text>
+        )}
+      </View>
+      
       {/* ボタン表示 */}
       <View className="flex-row p-5 gap-3 justify-center">
         <Button
