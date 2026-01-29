@@ -22,6 +22,8 @@ export default function AdvicePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
 
+  const showVisuals = !isLoading && !!visualCue;
+
   // directionをhookに渡す
   const { arrowStyle, arrowPositionStyle, boxStyle, isDepth } = usePhotoAdviceVisuals({
     direction: visualCue?.direction,
@@ -95,7 +97,7 @@ export default function AdvicePage() {
             />
 
             {/* 枠 */}
-            {isDepth && (
+            {showVisuals && isDepth && (
               <Animated.View
                 className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
                 style={boxStyle}
@@ -103,7 +105,7 @@ export default function AdvicePage() {
             )}
 
             {/* 矢印 */}
-            {!isDepth && (
+            {showVisuals && !isDepth && (
               <Animated.Image
                 source={ArrowImg}
                 className="absolute w-20 h-20"
