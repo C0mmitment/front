@@ -8,7 +8,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useCameraActions } from "../hooks/useCameraActions";
 import ShutterScroll from "./components/shutter-scroll";
-import SettingDrawer from "./components/SettingDrawer";
+import SettingDrawer from "./components/setting-drawer";
 import { colors } from "../constans/color";
 import { useLocationSetting } from "../hooks/useLocationSetting";
 import { useFirstLaunchFlag } from "../hooks/useFirstLaunchFlag";
