@@ -5,13 +5,15 @@ import { useState, useEffect } from "react";
 import * as Location from "expo-location";
 import * as MediaLibrary from 'expo-media-library';
 import Animated from "react-native-reanimated";
-import { Button } from "../components/Button/Button";
 import { getPhotoAdvice } from "../api/advice-api";
 import type { VisualCue } from "../api/advice-api";
 import { usePhotoAdviceVisuals } from "../hooks/usePhotoAdviceVisuals";
 import ArrowImg from "./assets/arrow.png";
 import type { CameraMode } from "../types/camera";
 import PhotoTips from "../components/Tips/tips";
+import IconButton from "../components/icon-button/icon-button";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Feather from '@expo/vector-icons/Feather';
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
@@ -135,15 +137,24 @@ export default function AdvicePage() {
       </View>
       
       {/* ボタン表示 */}
-      <View className="flex-row p-5 gap-3 justify-center">
-        <Button
-          text="撮影に戻る"
+      <View className="flex-row p-5 gap-8 justify-center">
+        {/* 撮影に戻るボタン */}
+        <IconButton
+          icon={<FontAwesome6 name="arrow-left" size={28} color="#FF73EF" />}
+          label="撮影に戻る"
           onPress={() => router.back()}
-          color="cancel"
         />
-        <Button
-          text="保存する"
+        {/* 保存するボタン */}
+        <IconButton
+          icon={<Feather name="download" size={28} color="#FF73EF" />}
+          label="保存する"
           onPress={savePhoto}
+        />
+        {/* 共有するボタン */}
+        <IconButton
+          icon={<FontAwesome6 name="share-nodes" size={28} color="#FF73EF" />}
+          label="共有する"
+          onPress={() => console.log("共有する")}
         />
       </View>
     </SafeAreaView>
