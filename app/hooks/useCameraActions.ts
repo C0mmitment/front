@@ -1,5 +1,4 @@
-// app/hooks/useCameraActions.ts
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react"; // useCallbackを追加
 import { CameraView } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -8,6 +7,19 @@ import type { CameraMode } from "../types/camera";
 export function useCameraActions() {
   const cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"back" | "front">("back");
+  const [zoom, setZoom] = useState(0);
+
+  // ズーム値を更新する関数
+  const updateZoom = useCallback((currentScale: number, base: number) => {
+    let nextZoom = base + (currentScale - 1) * 0.5;
+    
+    const MAX_ZOOM_LIMIT = 0.3; 
+    
+    nextZoom = Math.max(0, Math.min(nextZoom, MAX_ZOOM_LIMIT));
+    
+    setZoom(nextZoom);
+    return nextZoom; 
+  }, []);
 
   // 写真撮影
   async function takePicture(mode: CameraMode) {
@@ -48,11 +60,14 @@ export function useCameraActions() {
   // カメラ切り替え
   function toggleCameraFacing() {
     setFacing((prev) => (prev === "back" ? "front" : "back"));
+    setZoom(0); // カメラ切り替え時にズームをリセット
   }
 
   return {
     cameraRef,
     facing,
+    zoom,
+    updateZoom,
     takePicture,
     openPhotoFolder,
     toggleCameraFacing,

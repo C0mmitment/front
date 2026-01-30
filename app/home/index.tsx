@@ -13,6 +13,8 @@ import { colors } from "../constans/color";
 import { useLocationSetting } from "../hooks/useLocationSetting";
 import { useFirstLaunchFlag } from "../hooks/useFirstLaunchFlag";
 import type { CameraMode } from "../types/camera";
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSharedValue, runOnJS } from 'react-native-reanimated';
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -22,10 +24,25 @@ export default function HomePage() {
   const {
     cameraRef,
     facing,
+    zoom,
+    updateZoom,
     takePicture,
     openPhotoFolder,
     toggleCameraFacing,
   } = useCameraActions();
+
+  // --- ジェスチャーロジック ---
+  const baseZoom = useSharedValue(0);
+
+  const pinchGesture = Gesture.Pinch()
+    .onStart(() => {
+      // ジェスチャー開始時のズーム値を保存
+      baseZoom.value = zoom;
+    })
+    .onUpdate((event) => {
+      // JSスレッドの updateZoom を呼び出す
+      runOnJS(updateZoom)(event.scale, baseZoom.value);
+    });
 
   const {
     locationEnabled,    // 現在地利用の状態
@@ -98,7 +115,17 @@ export default function HomePage() {
         </TouchableOpacity>
       </View>
 
-      <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing} />
+      {/* カメラビュー */}
+      <GestureDetector gesture={pinchGesture}>
+        <View style={{ flex: 1 }}>
+          <CameraView 
+            ref={cameraRef} 
+            style={{ flex: 1 }} 
+            facing={facing} 
+            zoom={zoom}
+          />
+        </View>
+      </GestureDetector>
 
       {/* 設定パネル */}
       <SettingDrawer

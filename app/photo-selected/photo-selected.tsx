@@ -1,13 +1,14 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, Text, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { Button } from "../components/Button/Button";
+import { Image, Text, View, Pressable } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 import { useEffect, useState } from "react";
 import { getPhotoAdvice } from "../api/advice-api";
 import type { VisualCue } from "../api/advice-api";
 import PhotoTips from "../components/Tips/tips";
+import IconButton from "../components/icon-button/icon-button";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export default function PhotoSelectedPage() {
   const [advice, setAdvice] = useState<string>();
@@ -81,9 +82,20 @@ export default function PhotoSelectedPage() {
             <Text className="text-red-500">{advice}</Text>
           )}
         </View>
-      <View className="flex flex-row p-5 gap-3 justify-center">
-        <Button text="AIに聞く" onPress={fetchAdvice} />
-        <Button text="共有する" onPress={shareImage} />
+      <View className="flex flex-row p-5 gap-10 justify-center">
+        {/* AIに聞くボタン */}
+        <IconButton
+          icon={<FontAwesome6 name="robot" size={28} color="#FF73EF" />}
+          label="AIに聞く"
+          onPress={fetchAdvice}
+        />
+
+        {/* 共有するボタン */}
+        <IconButton
+          icon={<FontAwesome6 name="share-nodes" size={28} color="#FF73EF" />}
+          label="共有する"
+          onPress={shareImage}
+        />
       </View>
     </SafeAreaView>
   );
