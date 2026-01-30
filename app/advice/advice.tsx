@@ -10,6 +10,8 @@ import type { VisualCue } from "../api/advice-api";
 import { usePhotoAdviceVisuals } from "../hooks/usePhotoAdviceVisuals";
 import ArrowImg from "../../assets/arrow.png";
 import type { CameraMode } from "../types/camera";
+import * as Sharing from "expo-sharing";
+import * as FileSystem from "expo-file-system/legacy";
 import PhotoTips from "../components/Tips/tips";
 import IconButton from "../components/icon-button/icon-button";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -86,6 +88,24 @@ export default function AdvicePage() {
     router.back();
   }
 
+  // 画像の保存と共有
+  async function shareImage() {
+    if (!uri) return;
+    MediaLibrary.saveToLibraryAsync(uri);
+    try {
+      const tempPath = FileSystem.cacheDirectory! + "shared-image.jpg";
+
+      await FileSystem.copyAsync({
+        from: uri,
+        to: tempPath,
+      });
+
+      await Sharing.shareAsync(tempPath);
+    } catch (error) {
+      console.log("Share error:", error);
+    }
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* 画像プレビュー */}
@@ -154,8 +174,8 @@ export default function AdvicePage() {
         {/* 共有するボタン */}
         <IconButton
           icon={<FontAwesome6 name="share-nodes" size={28} color={colors.primary} />}
-          label="共有する"
-          onPress={() => console.log("共有する")}
+          label="保存して共有"
+          onPress={shareImage}
         />
       </View>
     </SafeAreaView>
