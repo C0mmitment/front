@@ -17,6 +17,7 @@ import IconButton from "../components/icon-button/icon-button";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Feather from '@expo/vector-icons/Feather';
 import { colors } from "../constans/color";
+import { useLocationSetting } from "../hooks/useLocationSetting";
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
@@ -26,6 +27,8 @@ export default function AdvicePage() {
   const [advice, setAdvice] = useState<string>("ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。");
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
+
+  const { locationEnabled, isLoaded } = useLocationSetting();
 
   const showVisuals = !isLoading && !!visualCue;
 
@@ -37,13 +40,14 @@ export default function AdvicePage() {
   // アドバイス取得
   useEffect(() => {
     if (!uri) return;
+    if (!isLoaded) return;
 
     const fetchAdvice = async () => {
       try {
         setIsLoading(true);
 
         // 現在地取得許可(とりあえずtrue)
-        const gathering = true;
+        const gathering = locationEnabled;
 
         // 緯度経度
         let loc: { lat: number; lon: number } | null = null;
@@ -79,7 +83,7 @@ export default function AdvicePage() {
     };
 
     fetchAdvice();
-  }, [uri]);
+  }, [uri, mode, locationEnabled, isLoaded]);
 
   // 画像保存
   function savePhoto() {
