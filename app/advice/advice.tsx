@@ -34,6 +34,8 @@ export default function AdvicePage() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
+  const [ratio, setRatio] = useState<number>(1);
+  const [box, setBox] = useState<{ w: number; h: number } | null>(null);
 
   const { locationEnabled, isLoaded } = useLocationSetting();
 
@@ -43,6 +45,33 @@ export default function AdvicePage() {
   const { arrowStyle, arrowPositionStyle, boxStyle, isDepth } = usePhotoAdviceVisuals({
     direction: visualCue?.direction,
   });
+
+  // 画像の縦横比を取得
+  useEffect(() => {
+    if (!uri) return;
+    Image.getSize(
+      uri,
+      (w, h) => setRatio(w / h),
+      () => setRatio(1),
+    );
+  }, [uri]);
+
+  const fitted = (() => {
+    if (!box || !ratio) return null;
+
+    const W = box.w;
+    const H = box.h;
+
+    let w = W;
+    let h = W / ratio;
+
+    if (h > H) {
+      h = H;
+      w = H * ratio;
+    }
+
+    return { w, h };
+  })();
 
   // アドバイス取得
   useEffect(() => {
@@ -119,37 +148,38 @@ export default function AdvicePage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* 画像プレビュー */}
-      <View className="flex-1 items-center justify-center">
+      <View
+        className="flex-1 items-center justify-center bg-gray-100"
+        onLayout={(e) => {
+          const { width, height } = e.nativeEvent.layout;
+          setBox({ w: width, h: height });
+        }}
+      >
         {uri ? (
-          <View className="relative h-[80%] w-[80%]">
-            {/* 撮った画像 */}
-            <Image source={{ uri }} className="h-full w-full" resizeMode="cover" />
+          fitted ? (
+            <View style={{ width: fitted.w, height: fitted.h }} className="relative">
+              {/* 画像（切らない） */}
+              <Image source={{ uri }} className="h-full w-full" resizeMode="contain" />
 
-            {/* 枠 */}
-            {showVisuals && isDepth && (
-              <Animated.View
-                className="absolute left-[15%] top-[20%] h-[60%] w-[70%] rounded-xl border-4 border-yellow-300"
-                style={boxStyle}
-              />
-            )}
+              {/* 枠 */}
+              {showVisuals && isDepth && (
+                <Animated.View
+                  className="absolute left-[15%] top-[20%] h-[60%] w-[70%] rounded-xl border-4 border-yellow-300"
+                  style={boxStyle}
+                />
+              )}
 
-            {/* 矢印 */}
-            {showVisuals && !isDepth && (
-              <Animated.Image
-                source={ArrowImg}
-                className="absolute h-20 w-20"
-                style={[
-                  {
-                    tintColor: 'lightblue',
-                  },
-                  arrowPositionStyle,
-                  arrowStyle,
-                ]}
-                resizeMode="contain"
-              />
-            )}
-          </View>
+              {/* 矢印 */}
+              {showVisuals && !isDepth && (
+                <Animated.Image
+                  source={ArrowImg}
+                  className="absolute h-20 w-20"
+                  style={[{ tintColor: 'lightblue' }, arrowPositionStyle, arrowStyle]}
+                  resizeMode="contain"
+                />
+              )}
+            </View>
+          ) : null
         ) : (
           <Text className="text-black">画像がありません</Text>
         )}
@@ -168,13 +198,11 @@ export default function AdvicePage() {
           label="撮影に戻る"
           onPress={() => router.back()}
         />
-        {/* 保存するボタン */}
         <IconButton
           icon={<Feather name="download" size={28} color={colors.primary} />}
           label="保存する"
           onPress={savePhoto}
         />
-        {/* 共有するボタン */}
         <IconButton
           icon={<FontAwesome6 name="share-nodes" size={28} color={colors.primary} />}
           label="保存して共有"
