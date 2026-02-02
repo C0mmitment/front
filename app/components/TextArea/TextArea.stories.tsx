@@ -1,6 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import { View } from 'react-native';
+
 import { TextArea } from './TextArea';
+
+import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
   title: 'Components/TextArea',
@@ -107,7 +109,8 @@ export const Disabled: Story = {
 export const WithDefaultValue: Story = {
   args: {
     label: 'Bio',
-    defaultValue: 'This is a sample bio text that demonstrates how the TextArea component looks with existing content.',
+    defaultValue:
+      'This is a sample bio text that demonstrates how the TextArea component looks with existing content.',
     helperText: 'Tell us about yourself',
     rows: 5,
   },
