@@ -13,13 +13,14 @@ import { colors } from "../constans/color";
 import { useLocationSetting } from "../hooks/useLocationSetting";
 import { useFirstLaunchFlag } from "../hooks/useFirstLaunchFlag";
 import type { CameraMode } from "../types/camera";
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSharedValue, runOnJS } from 'react-native-reanimated';
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mode, setMode] = useState<CameraMode>("normal");
+  const [flash, setFlash] = useState<"off" | "on" | "auto">("off");
 
   const {
     cameraRef,
@@ -106,8 +107,7 @@ export default function HomePage() {
   if (!isLoaded) return <View className="flex-1 bg-black" />;
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
-
+    <SafeAreaView className="flex-1 bg-white relative">
       {/* 上部 UI */}
       <View className="bg-white px-4 py-5 flex-row items-center justify-end">
         <TouchableOpacity onPress={() => setSettingsOpen(true)}>
@@ -117,12 +117,13 @@ export default function HomePage() {
 
       {/* カメラビュー */}
       <GestureDetector gesture={pinchGesture}>
-        <View style={{ flex: 1 }}>
+        <View className="flex-1">
           <CameraView 
             ref={cameraRef} 
             style={{ flex: 1 }} 
             facing={facing} 
             zoom={zoom}
+            flash={flash}
           />
         </View>
       </GestureDetector>
@@ -133,10 +134,12 @@ export default function HomePage() {
         onClose={() => setSettingsOpen(false)}
         locationEnabled={locationEnabled}
         onChangeLocationEnabled={setLocationEnabled}
+        flash={flash}
+        onChangeFlash={setFlash}
       />
 
       {/* 下部 UI */}
-      <View className="absolute bottom-10 w-full">
+      <View className="absolute bottom-6 w-full">
         <ShutterScroll
           selectedMode={mode}
           onSelectMode={setMode}
