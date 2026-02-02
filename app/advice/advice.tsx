@@ -27,6 +27,8 @@ export default function AdvicePage() {
   const [advice, setAdvice] = useState<string>("ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。");
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
+  const [ratio, setRatio] = useState<number>(1);
+  const [box, setBox] = useState<{ w: number; h: number } | null>(null);
 
   const { locationEnabled, isLoaded } = useLocationSetting();
 
@@ -36,6 +38,33 @@ export default function AdvicePage() {
   const { arrowStyle, arrowPositionStyle, boxStyle, isDepth } = usePhotoAdviceVisuals({
     direction: visualCue?.direction,
   });
+
+  // 画像の縦横比を取得
+  useEffect(() => {
+    if (!uri) return;
+    Image.getSize(
+      uri,
+      (w, h) => setRatio(w / h),
+      () => setRatio(1)
+    );
+  }, [uri]);
+
+  const fitted = (() => {
+    if (!box || !ratio) return null;
+
+    const W = box.w;
+    const H = box.h;
+
+    let w = W;
+    let h = W / ratio;
+
+    if (h > H) {
+      h = H;
+      w = H * ratio;
+    }
+
+    return { w, h };
+  })();
 
   // アドバイス取得
   useEffect(() => {
@@ -54,21 +83,21 @@ export default function AdvicePage() {
 
         // 現在地取得許可が出てれば
         if (gathering) {
-        const { status } = await Location.requestForegroundPermissionsAsync();
+          const { status } = await Location.requestForegroundPermissionsAsync();
 
-        if (status === "granted") {
-          const pos = await Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.Balanced,
-          });
+          if (status === "granted") {
+            const pos = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.Balanced,
+            });
 
-          loc = {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-          };
-        } else {
-          loc = null;
+            loc = {
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+            };
+          } else {
+            loc = null;
+          }
         }
-      }
 
         const res = await getPhotoAdvice(uri, gathering, loc, mode);
         setAdvice(res.analysis.advice);
@@ -112,41 +141,38 @@ export default function AdvicePage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* 画像プレビュー */}
-      <View className="flex-1 items-center justify-center">
+      <View
+        className="flex-1 items-center justify-center bg-gray-100"
+        onLayout={(e) => {
+          const { width, height } = e.nativeEvent.layout;
+          setBox({ w: width, h: height });
+        }}
+      >
         {uri ? (
-          <View className="w-[80%] h-[80%] relative">
-            {/* 撮った画像 */}
-            <Image
-              source={{ uri }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
+          fitted ? (
+            <View style={{ width: fitted.w, height: fitted.h }} className="relative">
+              {/* 画像（切らない） */}
+              <Image source={{ uri }} className="w-full h-full" resizeMode="contain" />
 
-            {/* 枠 */}
-            {showVisuals && isDepth && (
-              <Animated.View
-                className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
-                style={boxStyle}
-              />
-            )}
+              {/* 枠 */}
+              {showVisuals && isDepth && (
+                <Animated.View
+                  className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
+                  style={boxStyle}
+                />
+              )}
 
-            {/* 矢印 */}
-            {showVisuals && !isDepth && (
-              <Animated.Image
-                source={ArrowImg}
-                className="absolute w-20 h-20"
-                style={[
-                  {
-                    tintColor: "lightblue",
-                  },
-                  arrowPositionStyle,
-                  arrowStyle,
-                ]}
-                resizeMode="contain"
-              />
-            )}
-          </View>
+              {/* 矢印 */}
+              {showVisuals && !isDepth && (
+                <Animated.Image
+                  source={ArrowImg}
+                  className="absolute w-20 h-20"
+                  style={[{ tintColor: "lightblue" }, arrowPositionStyle, arrowStyle]}
+                  resizeMode="contain"
+                />
+              )}
+            </View>
+          ) : null
         ) : (
           <Text className="text-black">画像がありません</Text>
         )}
@@ -154,28 +180,21 @@ export default function AdvicePage() {
 
       {/* アドバイス表示 */}
       <View className="m-4">
-        {isLoading ? (
-          <PhotoTips />
-        ) : (
-          <Text className="text-red-500">{advice}</Text>
-        )}
+        {isLoading ? <PhotoTips /> : <Text className="text-red-500">{advice}</Text>}
       </View>
-      
+
       {/* ボタン表示 */}
       <View className="flex-row p-5 gap-8 justify-center">
-        {/* 撮影に戻るボタン */}
         <IconButton
           icon={<FontAwesome6 name="arrow-left" size={28} color={colors.primary} />}
           label="撮影に戻る"
           onPress={() => router.back()}
         />
-        {/* 保存するボタン */}
         <IconButton
           icon={<Feather name="download" size={28} color={colors.primary} />}
           label="保存する"
           onPress={savePhoto}
         />
-        {/* 共有するボタン */}
         <IconButton
           icon={<FontAwesome6 name="share-nodes" size={28} color={colors.primary} />}
           label="保存して共有"
