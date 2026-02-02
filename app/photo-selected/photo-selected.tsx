@@ -1,19 +1,24 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, Text, View, TouchableOpacity } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
-import * as Sharing from "expo-sharing";
-import * as FileSystem from "expo-file-system/legacy";
-import { useEffect, useState } from "react";
-import { getPhotoAdvice } from "../api/advice-api";
-import type { VisualCue } from "../api/advice-api";
-import PhotoTips from "../components/Tips/tips";
-import IconButton from "../components/icon-button/icon-button";
+import { useEffect, useState } from 'react';
+
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { colors } from "../constans/color";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import ArrowImg from "../../assets/arrow.png"
-import Animated from "react-native-reanimated";
-import { usePhotoAdviceVisuals } from "../hooks/usePhotoAdviceVisuals";
+import * as FileSystem from 'expo-file-system/legacy';
+import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Image, Text, View, TouchableOpacity } from 'react-native';
+
+import { useLocalSearchParams, router } from 'expo-router';
+import * as Sharing from 'expo-sharing';
+
+import ArrowImg from '../../assets/arrow.png';
+import { getPhotoAdvice } from '../api/advice-api';
+import IconButton from '../components/icon-button/icon-button';
+import PhotoTips from '../components/Tips/tips';
+import { colors } from '../constans/color';
+import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
+
+import type { VisualCue } from '../api/advice-api';
 
 export default function PhotoSelectedPage() {
   const [advice, setAdvice] = useState<string>();
@@ -25,10 +30,9 @@ export default function PhotoSelectedPage() {
 
   const showVisuals = !isLoading && !!visualCue;
 
-  const { arrowStyle, arrowPositionStyle, boxStyle, isDepth } =
-    usePhotoAdviceVisuals({
-      direction: visualCue?.direction,
-    });
+  const { arrowStyle, arrowPositionStyle, boxStyle, isDepth } = usePhotoAdviceVisuals({
+    direction: visualCue?.direction,
+  });
 
   // 画像をbox内で最大サイズにするための計算
   const fitted = (() => {
@@ -49,14 +53,12 @@ export default function PhotoSelectedPage() {
     return { w, h };
   })();
 
-
-
   useEffect(() => {
     if (!uri) return;
     Image.getSize(
       uri,
       (w, h) => setRatio(w / h),
-      () => setRatio(1)
+      () => setRatio(1),
     );
   }, [uri]);
 
@@ -64,7 +66,7 @@ export default function PhotoSelectedPage() {
     if (!uri) return;
 
     try {
-      const tempPath = FileSystem.cacheDirectory! + "shared-image.jpg";
+      const tempPath = FileSystem.cacheDirectory! + 'shared-image.jpg';
 
       await FileSystem.copyAsync({
         from: uri,
@@ -73,7 +75,7 @@ export default function PhotoSelectedPage() {
 
       await Sharing.shareAsync(tempPath);
     } catch (error) {
-      console.log("Share error:", error);
+      console.log('Share error:', error);
     }
   }
 
@@ -84,14 +86,13 @@ export default function PhotoSelectedPage() {
     try {
       setIsLoading(true);
 
-      const res = await getPhotoAdvice(uri, false, null, "normal");
+      const res = await getPhotoAdvice(uri, false, null, 'normal');
 
       setAdvice(res.analysis.advice);
       setVisualCue(res.analysis.visual_cues?.[0] ?? null);
-
     } catch (e) {
       console.error(e);
-      setAdvice("アドバイスの取得に失敗しました。");
+      setAdvice('アドバイスの取得に失敗しました。');
     } finally {
       setIsLoading(false);
     }
@@ -99,9 +100,8 @@ export default function PhotoSelectedPage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-
       {/* 上部 UI */}
-      <View className="bg-white px-4 py-5 flex-row items-center justify-start">
+      <View className="flex-row items-center justify-start bg-white px-4 py-5">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={28} color={colors.secondary} />
         </TouchableOpacity>
@@ -119,12 +119,12 @@ export default function PhotoSelectedPage() {
           fitted ? (
             <View style={{ width: fitted.w, height: fitted.h }} className="relative">
               {/* 画像 */}
-              <Image source={{ uri }} className="w-full h-full" resizeMode="contain" />
+              <Image source={{ uri }} className="h-full w-full" resizeMode="contain" />
 
               {/* 枠 */}
               {showVisuals && isDepth && (
                 <Animated.View
-                  className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
+                  className="absolute left-[15%] top-[20%] h-[60%] w-[70%] rounded-xl border-4 border-yellow-300"
                   style={boxStyle}
                 />
               )}
@@ -133,13 +133,12 @@ export default function PhotoSelectedPage() {
               {showVisuals && !isDepth && (
                 <Animated.Image
                   source={ArrowImg}
-                  className="absolute w-20 h-20 tint-blue-300"
+                  className="tint-blue-300 absolute h-20 w-20"
                   style={[arrowPositionStyle, arrowStyle]}
                   resizeMode="contain"
                 />
               )}
             </View>
-
           ) : null
         ) : (
           <Text className="text-black">画像がありません</Text>
@@ -148,13 +147,9 @@ export default function PhotoSelectedPage() {
 
       {/* Tips & アドバイス */}
       <View className="m-4">
-        {isLoading ? (
-          <PhotoTips />
-        ) : (
-          <Text className="text-red-500">{advice}</Text>
-        )}
+        {isLoading ? <PhotoTips /> : <Text className="text-red-500">{advice}</Text>}
       </View>
-      <View className="flex flex-row p-5 gap-10 justify-center">
+      <View className="flex flex-row justify-center gap-10 p-5">
         {/* AIに聞くボタン */}
         <IconButton
           icon={<FontAwesome6 name="robot" size={28} color={colors.primary} />}

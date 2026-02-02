@@ -1,30 +1,37 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, Text, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { useState, useEffect } from "react";
-import * as Location from "expo-location";
-import * as MediaLibrary from 'expo-media-library';
-import Animated from "react-native-reanimated";
-import { getPhotoAdvice } from "../api/advice-api";
-import type { VisualCue } from "../api/advice-api";
-import { usePhotoAdviceVisuals } from "../hooks/usePhotoAdviceVisuals";
-import ArrowImg from "../../assets/arrow.png";
-import type { CameraMode } from "../types/camera";
-import * as Sharing from "expo-sharing";
-import * as FileSystem from "expo-file-system/legacy";
-import PhotoTips from "../components/Tips/tips";
-import IconButton from "../components/icon-button/icon-button";
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { useEffect, useState } from 'react';
+
 import Feather from '@expo/vector-icons/Feather';
-import { colors } from "../constans/color";
-import { useLocationSetting } from "../hooks/useLocationSetting";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import * as FileSystem from 'expo-file-system/legacy';
+import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Image, Text, View } from 'react-native';
+
+import * as Location from 'expo-location';
+import * as MediaLibrary from 'expo-media-library';
+import { router, useLocalSearchParams } from 'expo-router';
+import * as Sharing from 'expo-sharing';
+
+import ArrowImg from '../../assets/arrow.png';
+import { getPhotoAdvice } from '../api/advice-api';
+import IconButton from '../components/icon-button/icon-button';
+import PhotoTips from '../components/Tips/tips';
+import { colors } from '../constans/color';
+import { useLocationSetting } from '../hooks/useLocationSetting';
+import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
+
+import type { VisualCue } from '../api/advice-api';
+import type { CameraMode } from '../types/camera';
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
     uri: string;
     mode: CameraMode;
   }>();
-  const [advice, setAdvice] = useState<string>("ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。");
+  const [advice, setAdvice] = useState<string>(
+    'ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。',
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
@@ -45,7 +52,7 @@ export default function AdvicePage() {
     Image.getSize(
       uri,
       (w, h) => setRatio(w / h),
-      () => setRatio(1)
+      () => setRatio(1),
     );
   }, [uri]);
 
@@ -85,7 +92,7 @@ export default function AdvicePage() {
         if (gathering) {
           const { status } = await Location.requestForegroundPermissionsAsync();
 
-          if (status === "granted") {
+          if (status === 'granted') {
             const pos = await Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.Balanced,
             });
@@ -105,7 +112,7 @@ export default function AdvicePage() {
         setVisualCue(res.analysis.visual_cues?.[0] ?? null);
       } catch (error) {
         console.error(error);
-        setAdvice("アドバイスの取得に失敗しました。時間をおいて再度お試しください。");
+        setAdvice('アドバイスの取得に失敗しました。時間をおいて再度お試しください。');
       } finally {
         setIsLoading(false);
       }
@@ -126,7 +133,7 @@ export default function AdvicePage() {
     if (!uri) return;
     MediaLibrary.saveToLibraryAsync(uri);
     try {
-      const tempPath = FileSystem.cacheDirectory! + "shared-image.jpg";
+      const tempPath = FileSystem.cacheDirectory! + 'shared-image.jpg';
 
       await FileSystem.copyAsync({
         from: uri,
@@ -135,7 +142,7 @@ export default function AdvicePage() {
 
       await Sharing.shareAsync(tempPath);
     } catch (error) {
-      console.log("Share error:", error);
+      console.log('Share error:', error);
     }
   }
 
@@ -152,12 +159,12 @@ export default function AdvicePage() {
           fitted ? (
             <View style={{ width: fitted.w, height: fitted.h }} className="relative">
               {/* 画像（切らない） */}
-              <Image source={{ uri }} className="w-full h-full" resizeMode="contain" />
+              <Image source={{ uri }} className="h-full w-full" resizeMode="contain" />
 
               {/* 枠 */}
               {showVisuals && isDepth && (
                 <Animated.View
-                  className="absolute top-[20%] left-[15%] w-[70%] h-[60%] border-4 border-yellow-300 rounded-xl"
+                  className="absolute left-[15%] top-[20%] h-[60%] w-[70%] rounded-xl border-4 border-yellow-300"
                   style={boxStyle}
                 />
               )}
@@ -166,8 +173,8 @@ export default function AdvicePage() {
               {showVisuals && !isDepth && (
                 <Animated.Image
                   source={ArrowImg}
-                  className="absolute w-20 h-20"
-                  style={[{ tintColor: "lightblue" }, arrowPositionStyle, arrowStyle]}
+                  className="absolute h-20 w-20"
+                  style={[{ tintColor: 'lightblue' }, arrowPositionStyle, arrowStyle]}
                   resizeMode="contain"
                 />
               )}
@@ -184,7 +191,8 @@ export default function AdvicePage() {
       </View>
 
       {/* ボタン表示 */}
-      <View className="flex-row p-5 gap-8 justify-center">
+      <View className="flex-row justify-center gap-8 p-5">
+        {/* 撮影に戻るボタン */}
         <IconButton
           icon={<FontAwesome6 name="arrow-left" size={28} color={colors.primary} />}
           label="撮影に戻る"

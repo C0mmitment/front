@@ -1,24 +1,26 @@
-import { useRef, useState, useCallback } from "react"; // useCallbackを追加
-import { CameraView } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
-import type { CameraMode } from "../types/camera";
+import { useRef, useState, useCallback } from 'react'; // useCallbackを追加
+
+import { CameraView } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+
+import type { CameraMode } from '../types/camera';
 
 export function useCameraActions() {
   const cameraRef = useRef<CameraView>(null);
-  const [facing, setFacing] = useState<"back" | "front">("back");
+  const [facing, setFacing] = useState<'back' | 'front'>('back');
   const [zoom, setZoom] = useState(0);
 
   // ズーム値を更新する関数
   const updateZoom = useCallback((currentScale: number, base: number) => {
     let nextZoom = base + (currentScale - 1) * 0.5;
-    
-    const MAX_ZOOM_LIMIT = 0.3; 
-    
+
+    const MAX_ZOOM_LIMIT = 0.3;
+
     nextZoom = Math.max(0, Math.min(nextZoom, MAX_ZOOM_LIMIT));
-    
+
     setZoom(nextZoom);
-    return nextZoom; 
+    return nextZoom;
   }, []);
 
   // 写真撮影
@@ -32,8 +34,8 @@ export function useCameraActions() {
     });
 
     router.push({
-      pathname: "/advice/advice",
-      params: { 
+      pathname: '/advice/advice',
+      params: {
         uri: photo.uri,
         mode: mode,
       },
@@ -51,7 +53,7 @@ export function useCameraActions() {
       const uri = result.assets[0].uri;
 
       router.push({
-        pathname: "/photo-selected/photo-selected",
+        pathname: '/photo-selected/photo-selected',
         params: { uri },
       });
     }
@@ -59,7 +61,7 @@ export function useCameraActions() {
 
   // カメラ切り替え
   function toggleCameraFacing() {
-    setFacing((prev) => (prev === "back" ? "front" : "back"));
+    setFacing((prev) => (prev === 'back' ? 'front' : 'back'));
     setZoom(0); // カメラ切り替え時にズームをリセット
   }
 
