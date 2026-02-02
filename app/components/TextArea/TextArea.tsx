@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { TextInput, View, Text, TextInputProps } from 'react-native';
 
 export interface TextAreaProps extends Omit<TextInputProps, 'multiline'> {
@@ -33,22 +34,12 @@ export const TextArea: React.FC<TextAreaProps> = ({
 
   return (
     <View className="w-full">
-      {label && (
-        <Text className="mb-2 text-sm font-medium text-gray-700">
-          {label}
-        </Text>
-      )}
+      {label && <Text className="mb-2 text-sm font-medium text-gray-700">{label}</Text>}
 
       <TextInput
         multiline
         numberOfLines={rows}
-        className={`
-          rounded-lg px-4 py-3 text-base text-gray-900
-          ${getVariantStyles()}
-          ${borderColorClass}
-          ${error ? 'border-blue-500' : ''}
-          ${className}
-        `}
+        className={`rounded-lg px-4 py-3 text-base text-gray-900 ${getVariantStyles()} ${borderColorClass} ${error ? 'border-blue-500' : ''} ${className} `}
         placeholderTextColor="#9CA3AF"
         {...props}
       />

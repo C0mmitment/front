@@ -1,8 +1,8 @@
-import { Redirect } from "expo-router";
-import Constants from "expo-constants";
+import Constants from 'expo-constants';
+import { Redirect } from 'expo-router';
 
 export default function Index() {
-  const isStorybookEnabled = Constants.expoConfig?.extra?.storybookEnabled === "true";
+  const isStorybookEnabled = Constants.expoConfig?.extra?.storybookEnabled === 'true';
 
   if (isStorybookEnabled) {
     return <Redirect href="/(storybook)" />;

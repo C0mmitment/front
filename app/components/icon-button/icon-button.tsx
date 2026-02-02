@@ -1,6 +1,7 @@
 // app/components/icon-button/icon-button.tsx
-import { Pressable, Text, View } from "react-native";
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+
+import { Pressable, Text, View } from 'react-native';
 
 type Props = {
   icon: ReactNode;
@@ -11,7 +12,7 @@ type Props = {
 export default function IconButton({ icon, label, onPress }: Props) {
   return (
     <Pressable onPress={onPress} className="flex-col items-center gap-3">
-      <View className="w-16 h-16 items-center justify-center border-2 border-primary rounded-full">
+      <View className="h-16 w-16 items-center justify-center rounded-full border-2 border-primary">
         {icon}
       </View>
       <Text className="text-secondary">{label}</Text>
