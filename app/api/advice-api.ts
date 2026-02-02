@@ -48,13 +48,6 @@ export async function getPhotoAdvice(
 
   const formData = new FormData();
 
-  // 画像
-  formData.append("photo", {
-    uri: manipulatedUri,
-    name: fileName,
-    type: mimeType,
-  } as any);
-
   // 追加したいフィールド
   formData.append("uuid", String(uuid.v4()));                 // uuid
   formData.append("gathering", gathering ? "true" : "false"); // 現在地の利用許可
@@ -63,6 +56,13 @@ export async function getPhotoAdvice(
     formData.append("lat", String(location.lat));
     formData.append("long", String(location.lon));
   }
+
+  // 画像
+  formData.append("photo", {
+    uri: manipulatedUri,
+    name: fileName,
+    type: mimeType,
+  } as any);
 
   try {
     const res = await clientApi.post("/analysis/advice", formData, {
