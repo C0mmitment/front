@@ -1,4 +1,4 @@
-// app/home/home.tsx
+// app/home/index.tsx
 import React, { useState, useEffect } from 'react';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -13,6 +13,7 @@ import { View, Alert, TouchableOpacity } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 import { useCameraActions } from '../hooks/useCameraActions';
+import { useFlashSetting } from '../hooks/useFlashSetting';
 import SettingDrawer from './components/setting-drawer';
 import ShutterScroll from './components/shutter-scroll';
 import { colors } from '../constans/color';
@@ -25,7 +26,8 @@ export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mode, setMode] = useState<CameraMode>('normal');
-  const [flash, setFlash] = useState<'off' | 'on' | 'auto'>('off');
+
+  const { flash, setFlash, isLoaded: flashLoaded } = useFlashSetting();
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
@@ -43,18 +45,11 @@ export default function HomePage() {
       runOnJS(updateZoom)(event.scale, baseZoom.value);
     });
 
-  const {
-    locationEnabled, // 現在地利用の状態
-    setLocationEnabled, // ON/OFF切り替え
-    isLoaded, // 読み込み終了フラグ
-  } = useLocationSetting();
-
+  const { locationEnabled, setLocationEnabled, isLoaded } = useLocationSetting();
   const { hasSeen, isLoaded: firstLoaded, markSeen } = useFirstLaunchFlag();
 
   useEffect(() => {
-    // 読み込みが揃うまで何もしない
-    if (!firstLoaded) return;
-    if (!isLoaded) return;
+    if (!firstLoaded || !isLoaded) return;
 
     // 初回だけ
     if (!hasSeen) {
@@ -93,7 +88,7 @@ export default function HomePage() {
   }
 
   // 権限読み込み中は何も出さない
-  if (!isLoaded) return <View className="flex-1 bg-black" />;
+  if (!isLoaded || !flashLoaded) return <View className="flex-1 bg-black" />;
 
   return (
     <SafeAreaView className="relative flex-1 bg-white">
