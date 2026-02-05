@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { View, Text, Pressable, Switch, TouchableOpacity } from 'react-native';
 
@@ -11,6 +12,8 @@ type Props = {
   onChangeLocationEnabled: (next: boolean) => void;
   flash: 'off' | 'on' | 'auto';
   onChangeFlash: (next: 'off' | 'on' | 'auto') => void;
+  ratio: '4:3' | '1:1' | '16:9';
+  onChangeRatio: (ratio: '4:3' | '1:1' | '16:9') => void;
 };
 
 export default function SettingDrawer({
@@ -20,6 +23,8 @@ export default function SettingDrawer({
   onChangeLocationEnabled,
   flash,
   onChangeFlash,
+  ratio,
+  onChangeRatio,
 }: Props) {
   if (!visible) return null;
 
@@ -30,12 +35,20 @@ export default function SettingDrawer({
     onChangeFlash(next);
   };
 
+  // アスペクト比切り替え
+  const nextRatio = () => {
+    const order: ('4:3' | '1:1' | '16:9')[] = ['4:3', '1:1', '16:9'];
+    const next = order[(order.indexOf(ratio) + 1) % order.length];
+    onChangeRatio(next);
+  };
+
   return (
     <>
       <Pressable onPress={onClose} className="absolute inset-0 z-40" />
 
       <View className="absolute left-[14px] right-[14px] top-[120px] z-50 rounded-[18px] border border-black/5 bg-white/80 px-4 py-3.5 shadow-xl">
         <Text className="mb-3 text-[13px] font-bold opacity-70">設定</Text>
+
         <View className="my-2 flex-row gap-10">
           {/* フラッシュ */}
           <TouchableOpacity onPress={nextFlash} className="flex-col items-center gap-2">
@@ -45,6 +58,12 @@ export default function SettingDrawer({
               color="black"
             />
             <Text>{flash.toUpperCase()}</Text>
+          </TouchableOpacity>
+
+          {/* アスペクト比 */}
+          <TouchableOpacity onPress={nextRatio} className="flex-col items-center gap-2">
+            <MaterialCommunityIcons name="aspect-ratio" size={24} color="black" />
+            <Text>{ratio}</Text>
           </TouchableOpacity>
         </View>
 

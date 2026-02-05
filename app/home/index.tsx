@@ -13,7 +13,7 @@ import { View, Alert, TouchableOpacity } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
 import { useCameraActions } from '../hooks/useCameraActions';
-import { useFlashSetting } from '../hooks/useFlashSetting';
+import { useCameraSettings } from '../hooks/useCameraSettings';
 import SettingDrawer from './components/setting-drawer';
 import ShutterScroll from './components/shutter-scroll';
 import { colors } from '../constans/color';
@@ -26,8 +26,7 @@ export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mode, setMode] = useState<CameraMode>('normal');
-
-  const { flash, setFlash, isLoaded: flashLoaded } = useFlashSetting();
+  const { flash, setFlash, ratio, setRatio } = useCameraSettings();
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
@@ -88,7 +87,7 @@ export default function HomePage() {
   }
 
   // 権限読み込み中は何も出さない
-  if (!isLoaded || !flashLoaded) return <View className="flex-1 bg-black" />;
+  if (!isLoaded) return <View className="flex-1 bg-black" />;
 
   return (
     <SafeAreaView className="relative flex-1 bg-white">
@@ -108,6 +107,7 @@ export default function HomePage() {
             facing={facing}
             zoom={zoom}
             flash={flash}
+            ratio={ratio}
           />
         </View>
       </GestureDetector>
@@ -120,6 +120,8 @@ export default function HomePage() {
         onChangeLocationEnabled={setLocationEnabled}
         flash={flash}
         onChangeFlash={setFlash}
+        ratio={ratio}
+        onChangeRatio={setRatio}
       />
 
       {/* 下部 UI */}
