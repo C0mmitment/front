@@ -36,7 +36,7 @@ export default function ShutterScroll({
 
   return (
     <FlatList
-      className={`bg-white ${className ?? ''}`}
+      className={`${className ?? ''}`}
       data={shutterButtons}
       horizontal
       keyExtractor={(item) => item.id}
