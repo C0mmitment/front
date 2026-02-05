@@ -31,6 +31,12 @@ export default function HomePage() {
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
 
+  const aspectRatios: Record<string, number> = {
+    '4:3': 3 / 4,
+    '16:9': 9 / 16,
+    '1:1': 1 / 1,
+  };
+
   // --- ジェスチャーロジック ---
   const baseZoom = useSharedValue(0);
 
@@ -100,10 +106,10 @@ export default function HomePage() {
 
       {/* カメラビュー */}
       <GestureDetector gesture={pinchGesture}>
-        <View className="flex-1">
+        <View className="flex-1 items-center justify-center bg-white">
           <CameraView
             ref={cameraRef}
-            style={{ flex: 1 }}
+            style={{ aspectRatio: aspectRatios[ratio], width: '100%' }}
             facing={facing}
             zoom={zoom}
             flash={flash}
