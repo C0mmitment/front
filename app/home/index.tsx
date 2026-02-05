@@ -98,7 +98,7 @@ export default function HomePage() {
   return (
     <SafeAreaView className="relative flex-1 bg-white">
       {/* 上部 UI */}
-      <View className="flex-row items-center justify-end bg-white px-4 py-5">
+      <View className="absolute top-12 z-50 w-full flex-row justify-end px-4 py-5">
         <TouchableOpacity onPress={() => setSettingsOpen(true)}>
           <Ionicons name="settings-sharp" size={32} color={colors.secondary} />
         </TouchableOpacity>
@@ -126,7 +126,7 @@ export default function HomePage() {
       </View>
 
       {/* 下部 UI */}
-      <View className="w-full bg-white pb-6">
+      <View className="absolute bottom-10 w-full pb-6">
         <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={takePicture} />
         <View className="flex-row items-center justify-between px-10 pt-2">
           <TouchableOpacity onPress={openPhotoFolder}>
