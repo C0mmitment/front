@@ -14,7 +14,10 @@
     "storybook-generate": "sb-rn-get-stories --config-path .ondevice",
     "storybook": "cross-env STORYBOOK_ENABLED='true' expo start",
     "storybook:ios": "cross-env STORYBOOK_ENABLED='true' expo start --ios",
-    "storybook:android": "cross-env STORYBOOK_ENABLED='true' expo start --android"
+    "storybook:android": "cross-env STORYBOOK_ENABLED='true' expo start --android",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.2.6",
