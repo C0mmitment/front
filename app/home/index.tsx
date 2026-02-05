@@ -14,7 +14,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useCameraActions } from '../hooks/useCameraActions';
-import { useFlashSetting } from '../hooks/useFlashSetting';
+import { useCameraSettings } from '../hooks/useCameraSettings';
 import SettingDrawer from './components/setting-drawer';
 import ShutterScroll from './components/shutter-scroll';
 import { colors } from '../constans/color';
@@ -27,8 +27,7 @@ export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mode, setMode] = useState<CameraMode>('normal');
-
-  const { flash, setFlash, isLoaded: flashLoaded } = useFlashSetting();
+  const { flash, setFlash, ratio, setRatio } = useCameraSettings();
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
@@ -37,6 +36,11 @@ export default function HomePage() {
     compare?: string; // "1" なら比較モード
     pre_analysis?: string; // JSON文字列
   }>();
+  const aspectRatios: Record<string, number> = {
+    '4:3': 3 / 4,
+    '16:9': 9 / 16,
+    '1:1': 1 / 1,
+  };
 
   // --- ジェスチャーロジック ---
   const baseZoom = useSharedValue(0);
@@ -99,7 +103,7 @@ export default function HomePage() {
   }
 
   // 権限読み込み中は何も出さない
-  if (!isLoaded || !flashLoaded) return <View className="flex-1 bg-black" />;
+  if (!isLoaded) return <View className="flex-1 bg-black" />;
 
   return (
     <SafeAreaView className="relative flex-1 bg-white">
@@ -111,17 +115,38 @@ export default function HomePage() {
       </View>
 
       {/* カメラビュー */}
-      <GestureDetector gesture={pinchGesture}>
-        <View className="flex-1">
-          <CameraView
-            ref={cameraRef}
-            style={{ flex: 1 }}
-            facing={facing}
-            zoom={zoom}
-            flash={flash}
-          />
+      <View className="flex-1 items-center justify-center overflow-hidden">
+        <GestureDetector gesture={pinchGesture}>
+          <View
+            style={{
+              width: '100%',
+              aspectRatio: aspectRatios[ratio] || 3 / 4,
+            }}
+          >
+            <CameraView
+              ref={cameraRef}
+              style={{ flex: 1 }}
+              facing={facing}
+              zoom={zoom}
+              flash={flash}
+              ratio={ratio}
+            />
+          </View>
+        </GestureDetector>
+      </View>
+
+      {/* 下部 UI */}
+      <View className="w-full bg-white pb-6">
+        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={onShutterPress} />
+        <View className="flex-row items-center justify-between px-10 pt-2">
+          <TouchableOpacity onPress={openPhotoFolder}>
+            <FontAwesome name="picture-o" size={32} color={colors.secondary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleCameraFacing}>
+            <FontAwesome6 name="camera-rotate" size={32} color={colors.secondary} />
+          </TouchableOpacity>
         </View>
-      </GestureDetector>
+      </View>
 
       {/* 設定パネル */}
       <SettingDrawer
@@ -131,22 +156,9 @@ export default function HomePage() {
         onChangeLocationEnabled={setLocationEnabled}
         flash={flash}
         onChangeFlash={setFlash}
+        ratio={ratio}
+        onChangeRatio={setRatio}
       />
-
-      {/* 下部 UI */}
-      <View className="absolute bottom-6 w-full">
-        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={onShutterPress} />
-        <View className="flex-row items-center justify-between bg-white pb-5">
-          {/* 画像アイコン */}
-          <TouchableOpacity className="w-15 mx-3 items-center" onPress={openPhotoFolder}>
-            <FontAwesome name="picture-o" size={32} color={colors.secondary} />
-          </TouchableOpacity>
-          {/* 内外切り替えアイコン */}
-          <TouchableOpacity className="w-15 mx-3 items-center" onPress={toggleCameraFacing}>
-            <FontAwesome6 name="camera-rotate" size={32} color={colors.secondary} />
-          </TouchableOpacity>
-        </View>
-      </View>
     </SafeAreaView>
   );
 }
