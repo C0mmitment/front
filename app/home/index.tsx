@@ -105,18 +105,38 @@ export default function HomePage() {
       </View>
 
       {/* カメラビュー */}
-      <GestureDetector gesture={pinchGesture}>
-        <View className="flex-1 items-center justify-center bg-white">
-          <CameraView
-            ref={cameraRef}
-            style={{ aspectRatio: aspectRatios[ratio], width: '100%' }}
-            facing={facing}
-            zoom={zoom}
-            flash={flash}
-            ratio={ratio}
-          />
+      <View className="flex-1 items-center justify-center overflow-hidden">
+        <GestureDetector gesture={pinchGesture}>
+          <View
+            style={{
+              width: '100%',
+              aspectRatio: aspectRatios[ratio] || 3 / 4,
+            }}
+          >
+            <CameraView
+              ref={cameraRef}
+              style={{ flex: 1 }}
+              facing={facing}
+              zoom={zoom}
+              flash={flash}
+              ratio={ratio}
+            />
+          </View>
+        </GestureDetector>
+      </View>
+
+      {/* 下部 UI */}
+      <View className="w-full bg-white pb-6">
+        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={takePicture} />
+        <View className="flex-row items-center justify-between px-10 pt-2">
+          <TouchableOpacity onPress={openPhotoFolder}>
+            <FontAwesome name="picture-o" size={32} color={colors.secondary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleCameraFacing}>
+            <FontAwesome6 name="camera-rotate" size={32} color={colors.secondary} />
+          </TouchableOpacity>
         </View>
-      </GestureDetector>
+      </View>
 
       {/* 設定パネル */}
       <SettingDrawer
@@ -129,21 +149,6 @@ export default function HomePage() {
         ratio={ratio}
         onChangeRatio={setRatio}
       />
-
-      {/* 下部 UI */}
-      <View className="absolute bottom-6 w-full">
-        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={takePicture} />
-        <View className="flex-row items-center justify-between bg-white pb-5">
-          {/* 画像アイコン */}
-          <TouchableOpacity className="w-15 mx-3 items-center" onPress={openPhotoFolder}>
-            <FontAwesome name="picture-o" size={32} color={colors.secondary} />
-          </TouchableOpacity>
-          {/* 内外切り替えアイコン */}
-          <TouchableOpacity className="w-15 mx-3 items-center" onPress={toggleCameraFacing}>
-            <FontAwesome6 name="camera-rotate" size={32} color={colors.secondary} />
-          </TouchableOpacity>
-        </View>
-      </View>
     </SafeAreaView>
   );
 }
