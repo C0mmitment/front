@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Alert, TouchableOpacity } from 'react-native';
 
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useLocalSearchParams } from 'expo-router';
 
 import { useCameraActions } from '../hooks/useCameraActions';
 import { useFlashSetting } from '../hooks/useFlashSetting';
@@ -31,6 +32,11 @@ export default function HomePage() {
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
+
+  const { compare, pre_analysis } = useLocalSearchParams<{
+    compare?: string; // "1" なら比較モード
+    pre_analysis?: string; // JSON文字列
+  }>();
 
   // --- ジェスチャーロジック ---
   const baseZoom = useSharedValue(0);
@@ -76,6 +82,11 @@ export default function HomePage() {
       );
     }
   }, [firstLoaded, isLoaded, hasSeen, markSeen, setLocationEnabled]);
+
+  // シャッター押したとき
+  const onShutterPress = (m: CameraMode) => {
+    takePicture(m, { compare, pre_analysis });
+  };
 
   // 権限チェック
   if (!permission) return <View className="flex-1 bg-black" />;
@@ -124,7 +135,7 @@ export default function HomePage() {
 
       {/* 下部 UI */}
       <View className="absolute bottom-6 w-full">
-        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={takePicture} />
+        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={onShutterPress} />
         <View className="flex-row items-center justify-between bg-white pb-5">
           {/* 画像アイコン */}
           <TouchableOpacity className="w-15 mx-3 items-center" onPress={openPhotoFolder}>

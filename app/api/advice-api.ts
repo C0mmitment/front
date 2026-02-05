@@ -21,7 +21,7 @@ export type VisualCue = {
     | 'down_left'
     | 'down_right'
     | 'forward'
-    | 'backward'; // 矢印の方向
+    | 'backward';
 };
 
 // アドバイス
@@ -39,6 +39,7 @@ export async function getPhotoAdvice(
   gathering: boolean,
   location: LocationPayload,
   category: CameraMode,
+  preAnalysis?: any,
 ): Promise<PhotoAdviceResponse> {
   const targetSize = 1024; // 変換サイズ
   const manipResult = await ImageManipulator.manipulateAsync(
@@ -46,10 +47,7 @@ export async function getPhotoAdvice(
     // リサイズ
     [{ resize: { width: targetSize, height: targetSize } }],
     // JPEG、品質80%
-    {
-      compress: 0.8,
-      format: ImageManipulator.SaveFormat.JPEG,
-    },
+    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
   );
 
   // URIを処理後のものに置き換える
@@ -67,6 +65,9 @@ export async function getPhotoAdvice(
     // 現在地
     formData.append('lat', String(location.lat));
     formData.append('long', String(location.lon));
+  }
+  if (preAnalysis) {
+    formData.append('pre_analysis', JSON.stringify(preAnalysis));
   }
 
   // 画像

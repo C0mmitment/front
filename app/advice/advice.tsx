@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as FileSystem from 'expo-file-system/legacy';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, TouchableOpacity } from 'react-native';
 
 import * as Location from 'expo-location';
 import * as MediaLibrary from 'expo-media-library';
@@ -25,9 +27,11 @@ import type { VisualCue } from '../api/advice-api';
 import type { CameraMode } from '../types/camera';
 
 export default function AdvicePage() {
-  const { uri, mode } = useLocalSearchParams<{
+  const { uri, mode, compare, pre_analysis } = useLocalSearchParams<{
     uri: string;
     mode: CameraMode;
+    compare?: string;
+    pre_analysis?: string;
   }>();
   const [advice, setAdvice] = useState<string>(
     'ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。',
@@ -36,6 +40,7 @@ export default function AdvicePage() {
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+  const lastAnalysisRef = useRef<any | null>(null); // ← 前回のanalysis保持
 
   const { locationEnabled, isLoaded } = useLocationSetting();
 
@@ -74,52 +79,85 @@ export default function AdvicePage() {
   })();
 
   // アドバイス取得
-  useEffect(() => {
+  const fetchAdvice = async () => {
     if (!uri) return;
     if (!isLoaded) return;
 
-    const fetchAdvice = async () => {
-      try {
-        setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-        // 現在地取得許可(とりあえずtrue)
-        const gathering = locationEnabled;
+      const gathering = locationEnabled;
 
-        // 緯度経度
-        let loc: { lat: number; lon: number } | null = null;
+      let loc: { lat: number; lon: number } | null = null;
 
-        // 現在地取得許可が出てれば
-        if (gathering) {
-          const { status } = await Location.requestForegroundPermissionsAsync();
-
-          if (status === 'granted') {
-            const pos = await Location.getCurrentPositionAsync({
-              accuracy: Location.Accuracy.Balanced,
-            });
-
-            loc = {
-              lat: pos.coords.latitude,
-              lon: pos.coords.longitude,
-            };
-          } else {
-            loc = null;
-          }
+      if (gathering) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          const pos = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+          loc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         }
-
-        const res = await getPhotoAdvice(uri, gathering, loc, mode);
-        setAdvice(res.analysis.advice);
-        // とりあえず先頭だけ使う
-        setVisualCue(res.analysis.visual_cues?.[0] ?? null);
-      } catch (error) {
-        console.error(error);
-        setAdvice('アドバイスの取得に失敗しました。時間をおいて再度お試しください。');
-      } finally {
-        setIsLoading(false);
       }
-    };
 
+      console.log('compare:', compare);
+      console.log('pre_analysis len:', pre_analysis?.length);
+      try {
+        const tmp = pre_analysis ? JSON.parse(pre_analysis) : null;
+        console.log('pre_analysis parsed ok:', !!tmp);
+      } catch (e) {
+        console.log('pre_analysis parse failed:', String(e));
+      }
+
+      let pre: any | undefined = undefined;
+      if (compare === '1' && pre_analysis) {
+        try {
+          pre = JSON.parse(pre_analysis);
+        } catch {
+          pre = undefined;
+        }
+      }
+
+      const res = await getPhotoAdvice(uri, gathering, loc, mode, pre);
+
+      setAdvice(res.analysis.advice);
+      setVisualCue(res.analysis.visual_cues?.[0] ?? null);
+
+      lastAnalysisRef.current = res.analysis;
+      console.log(lastAnalysisRef);
+
+      if (compare === '1') {
+        router.replace({
+          pathname: '/advice/advice',
+          params: { uri, mode },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      setAdvice('アドバイスの取得に失敗しました。時間をおいて再度お試しください。');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!uri) return;
+    if (!isLoaded) return;
     fetchAdvice();
   }, [uri, mode, locationEnabled, isLoaded]);
+
+  // 比較撮影
+  function comparePhoto() {
+    const pre = lastAnalysisRef.current;
+
+    router.push({
+      pathname: '/home',
+      params: {
+        compare: '1', // 比較撮影フラグ
+        pre_analysis: pre ? JSON.stringify(pre) : '', // 初回は空
+      },
+    });
+  }
 
   // 画像保存
   function savePhoto() {
@@ -148,6 +186,13 @@ export default function AdvicePage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* 上部 UI */}
+      <View className="flex-row items-center justify-start bg-white px-4 py-5">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={28} color={colors.secondary} />
+        </TouchableOpacity>
+      </View>
+
       <View
         className="flex-1 items-center justify-center bg-gray-100"
         onLayout={(e) => {
@@ -192,11 +237,12 @@ export default function AdvicePage() {
 
       {/* ボタン表示 */}
       <View className="flex-row justify-center gap-8 p-5">
-        {/* 撮影に戻るボタン */}
         <IconButton
-          icon={<FontAwesome6 name="arrow-left" size={28} color={colors.primary} />}
-          label="撮影に戻る"
-          onPress={() => router.back()}
+          icon={
+            <MaterialCommunityIcons name="camera-retake-outline" size={28} color={colors.primary} />
+          }
+          label="比較撮影"
+          onPress={comparePhoto}
         />
         <IconButton
           icon={<Feather name="download" size={28} color={colors.primary} />}
