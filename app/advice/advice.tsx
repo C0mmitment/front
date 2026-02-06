@@ -23,6 +23,7 @@ import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
 import type { VisualCue } from '../api/advice-api';
 import type { CameraMode } from '../types/camera';
+import type { Tips } from '../types/tips';
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
@@ -36,6 +37,12 @@ export default function AdvicePage() {
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+
+  const [tips, setTips] = useState<Tips>({
+    title: 'ここはなに？',
+    category: 'app',
+    content: 'やくに立つかもしれない情報が書かれているよ！',
+  });
 
   const { locationEnabled, isLoaded } = useLocationSetting();
 
@@ -187,7 +194,11 @@ export default function AdvicePage() {
 
       {/* アドバイス表示 */}
       <View className="m-4">
-        {isLoading ? <PhotoTips /> : <Text className="text-red-500">{advice}</Text>}
+        {isLoading ? (
+          <PhotoTips title={tips.title} content={tips.content} category={tips.category} />
+        ) : (
+          <Text className="text-red-500">{advice}</Text>
+        )}
       </View>
 
       {/* ボタン表示 */}
