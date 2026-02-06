@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as FileSystem from 'expo-file-system/legacy';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, TouchableOpacity } from 'react-native';
 
 import * as Location from 'expo-location';
 import * as MediaLibrary from 'expo-media-library';
@@ -18,6 +20,7 @@ import { getPhotoAdvice } from '../api/advice-api';
 import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
+import { useCompare } from '../contexts/compareContext';
 import { useLocationSetting } from '../hooks/useLocationSetting';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
@@ -36,6 +39,8 @@ export default function AdvicePage() {
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+  const lastAnalysisRef = useRef<any | null>(null);
+  const { enabled, preAnalysis, startCompare, clearCompare } = useCompare();
 
   const { locationEnabled, isLoaded } = useLocationSetting();
 
@@ -74,52 +79,57 @@ export default function AdvicePage() {
   })();
 
   // アドバイス取得
-  useEffect(() => {
+  const fetchAdvice = async () => {
     if (!uri) return;
     if (!isLoaded) return;
 
-    const fetchAdvice = async () => {
-      try {
-        setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-        // 現在地取得許可(とりあえずtrue)
-        const gathering = locationEnabled;
+      const gathering = locationEnabled;
 
-        // 緯度経度
-        let loc: { lat: number; lon: number } | null = null;
+      let loc: { lat: number; lon: number } | null = null;
 
-        // 現在地取得許可が出てれば
-        if (gathering) {
-          const { status } = await Location.requestForegroundPermissionsAsync();
-
-          if (status === 'granted') {
-            const pos = await Location.getCurrentPositionAsync({
-              accuracy: Location.Accuracy.Balanced,
-            });
-
-            loc = {
-              lat: pos.coords.latitude,
-              lon: pos.coords.longitude,
-            };
-          } else {
-            loc = null;
-          }
+      if (gathering) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          const pos = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+          loc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         }
-
-        const res = await getPhotoAdvice(uri, gathering, loc, mode);
-        setAdvice(res.analysis.advice);
-        // とりあえず先頭だけ使う
-        setVisualCue(res.analysis.visual_cues?.[0] ?? null);
-      } catch (error) {
-        console.error(error);
-        setAdvice('アドバイスの取得に失敗しました。時間をおいて再度お試しください。');
-      } finally {
-        setIsLoading(false);
       }
-    };
+      const pre = enabled ? preAnalysis : undefined;
 
+      const res = await getPhotoAdvice(uri, gathering, loc, mode, pre);
+      // 1回使ったら消す
+      if (enabled) clearCompare();
+
+      setAdvice(res.analysis.advice);
+      setVisualCue(res.analysis.visual_cues?.[0] ?? null);
+
+      lastAnalysisRef.current = res.analysis;
+      console.log(lastAnalysisRef);
+    } catch (error) {
+      console.error(error);
+      setAdvice('アドバイスの取得に失敗しました。時間をおいて再度お試しください。');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!uri) return;
+    if (!isLoaded) return;
     fetchAdvice();
   }, [uri, mode, locationEnabled, isLoaded]);
+
+  // 比較撮影
+  function comparePhoto() {
+    if (!lastAnalysisRef.current) return;
+    startCompare(lastAnalysisRef.current);
+    router.push('/home');
+  }
 
   // 画像保存
   function savePhoto() {
@@ -148,6 +158,13 @@ export default function AdvicePage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* 上部 UI */}
+      <View className="flex-row items-center justify-start bg-white px-4 py-5">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={28} color={colors.secondary} />
+        </TouchableOpacity>
+      </View>
+
       <View
         className="flex-1 items-center justify-center bg-gray-100"
         onLayout={(e) => {
@@ -192,11 +209,12 @@ export default function AdvicePage() {
 
       {/* ボタン表示 */}
       <View className="flex-row justify-center gap-8 p-5">
-        {/* 撮影に戻るボタン */}
         <IconButton
-          icon={<FontAwesome6 name="arrow-left" size={28} color={colors.primary} />}
-          label="撮影に戻る"
-          onPress={() => router.back()}
+          icon={
+            <MaterialCommunityIcons name="camera-retake-outline" size={28} color={colors.primary} />
+          }
+          label="比較撮影"
+          onPress={comparePhoto}
         />
         <IconButton
           icon={<Feather name="download" size={28} color={colors.primary} />}
