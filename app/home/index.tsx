@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Alert, TouchableOpacity } from 'react-native';
 
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useLocalSearchParams } from 'expo-router';
 
 import { useCameraActions } from '../hooks/useCameraActions';
 import { useCameraSettings } from '../hooks/useCameraSettings';
@@ -31,11 +30,6 @@ export default function HomePage() {
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
-
-  const { compare, pre_analysis } = useLocalSearchParams<{
-    compare?: string; // "1" なら比較モード
-    pre_analysis?: string; // JSON文字列
-  }>();
   const aspectRatios: Record<string, number> = {
     '4:3': 3 / 4,
     '16:9': 9 / 16,
@@ -87,11 +81,6 @@ export default function HomePage() {
     }
   }, [firstLoaded, isLoaded, hasSeen, markSeen, setLocationEnabled]);
 
-  // シャッター押したとき
-  const onShutterPress = (m: CameraMode) => {
-    takePicture(m, { compare, pre_analysis });
-  };
-
   // 権限チェック
   if (!permission) return <View className="flex-1 bg-black" />;
   if (!permission.granted) {
@@ -137,7 +126,7 @@ export default function HomePage() {
 
       {/* 下部 UI */}
       <View className="w-full bg-white pb-6">
-        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={onShutterPress} />
+        <ShutterScroll selectedMode={mode} onSelectMode={setMode} onShutterPress={takePicture} />
         <View className="flex-row items-center justify-between px-10 pt-2">
           <TouchableOpacity onPress={openPhotoFolder}>
             <FontAwesome name="picture-o" size={32} color={colors.secondary} />

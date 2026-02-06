@@ -20,6 +20,7 @@ import { getPhotoAdvice } from '../api/advice-api';
 import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
+import { useCompare } from '../contexts/compareContext';
 import { useLocationSetting } from '../hooks/useLocationSetting';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
@@ -27,11 +28,9 @@ import type { VisualCue } from '../api/advice-api';
 import type { CameraMode } from '../types/camera';
 
 export default function AdvicePage() {
-  const { uri, mode, compare, pre_analysis } = useLocalSearchParams<{
+  const { uri, mode } = useLocalSearchParams<{
     uri: string;
     mode: CameraMode;
-    compare?: string;
-    pre_analysis?: string;
   }>();
   const [advice, setAdvice] = useState<string>(
     'ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。',
@@ -40,7 +39,8 @@ export default function AdvicePage() {
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
-  const lastAnalysisRef = useRef<any | null>(null); // ← 前回のanalysis保持
+  const lastAnalysisRef = useRef<any | null>(null);
+  const { enabled, preAnalysis, startCompare, clearCompare } = useCompare();
 
   const { locationEnabled, isLoaded } = useLocationSetting();
 
@@ -99,39 +99,17 @@ export default function AdvicePage() {
           loc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         }
       }
-
-      console.log('compare:', compare);
-      console.log('pre_analysis len:', pre_analysis?.length);
-      try {
-        const tmp = pre_analysis ? JSON.parse(pre_analysis) : null;
-        console.log('pre_analysis parsed ok:', !!tmp);
-      } catch (e) {
-        console.log('pre_analysis parse failed:', String(e));
-      }
-
-      let pre: any | undefined = undefined;
-      if (compare === '1' && pre_analysis) {
-        try {
-          pre = JSON.parse(pre_analysis);
-        } catch {
-          pre = undefined;
-        }
-      }
+      const pre = enabled ? preAnalysis : undefined;
 
       const res = await getPhotoAdvice(uri, gathering, loc, mode, pre);
+      // 1回使ったら消す
+      if (enabled) clearCompare();
 
       setAdvice(res.analysis.advice);
       setVisualCue(res.analysis.visual_cues?.[0] ?? null);
 
       lastAnalysisRef.current = res.analysis;
       console.log(lastAnalysisRef);
-
-      if (compare === '1') {
-        router.replace({
-          pathname: '/advice/advice',
-          params: { uri, mode },
-        });
-      }
     } catch (error) {
       console.error(error);
       setAdvice('アドバイスの取得に失敗しました。時間をおいて再度お試しください。');
@@ -148,15 +126,9 @@ export default function AdvicePage() {
 
   // 比較撮影
   function comparePhoto() {
-    const pre = lastAnalysisRef.current;
-
-    router.push({
-      pathname: '/home',
-      params: {
-        compare: '1', // 比較撮影フラグ
-        pre_analysis: pre ? JSON.stringify(pre) : '', // 初回は空
-      },
-    });
+    if (!lastAnalysisRef.current) return;
+    startCompare(lastAnalysisRef.current);
+    router.push('/home');
   }
 
   // 画像保存
