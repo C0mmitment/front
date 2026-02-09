@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -21,6 +21,7 @@ import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
 import { useCompare } from '../contexts/compareContext';
+import { useTips } from '../contexts/tipsContext';
 import { useLocationSetting } from '../hooks/useLocationSetting';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
@@ -43,6 +44,9 @@ export default function AdvicePage() {
   const { enabled, preAnalysis, startCompare, clearCompare } = useCompare();
 
   const { locationEnabled, isLoaded } = useLocationSetting();
+
+  const { getRandomTip } = useTips();
+  const tips = useMemo(() => getRandomTip(), []);
 
   const showVisuals = !isLoading && !!visualCue;
 
@@ -204,7 +208,11 @@ export default function AdvicePage() {
 
       {/* アドバイス表示 */}
       <View className="m-4">
-        {isLoading ? <PhotoTips /> : <Text className="text-red-500">{advice}</Text>}
+        {isLoading ? (
+          <PhotoTips title={tips.title} content={tips.content} category={tips.category} />
+        ) : (
+          <Text className="text-red-500">{advice}</Text>
+        )}
       </View>
 
       {/* ボタン表示 */}

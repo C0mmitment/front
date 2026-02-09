@@ -1,28 +1,28 @@
-// app/advice/components/photo-tips.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-import { View, Text, Image, Animated, Easing } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-type Tip = {
-  title: string;
-  advice: string;
-  image: any;
-};
+import { View, Text, Animated, Easing } from 'react-native';
+
+import type { TipsCategory } from '../../types/tips';
 
 type PhotoTipsProps = {
-  className?: string; // 外部からclassNameを受け取れるように
+  title: string;
+  content: string;
+  category: TipsCategory;
+  className?: string;
 };
 
-export default function PhotoTips({ className = '' }: PhotoTipsProps) {
-  const tips: Tip = {
-    title: '人を撮るときのワンポイント',
-    advice:
-      '人物を撮るときは、スマホを少し上向きに傾けてみましょう。長めの文章でも折り返されるようになります。',
-    image: require('../../../assets/photo-tips-sample.png'),
+export default function PhotoTips({ title, content, category, className = '' }: PhotoTipsProps) {
+  const categoryIconMap: Record<TipsCategory, keyof typeof Ionicons.glyphMap> = {
+    photo: 'camera-outline',
+    app: 'bulb-outline',
+    dev: 'chatbubble-ellipses-outline',
+    other: 'cube-outline',
   };
 
   // ローディング用アニメーション
-  const opacity = useRef(new Animated.Value(0.3)).current;
+  const opacity = useMemo(() => new Animated.Value(0.3), []);
 
   useEffect(() => {
     Animated.loop(
@@ -41,17 +41,19 @@ export default function PhotoTips({ className = '' }: PhotoTipsProps) {
         }),
       ]),
     ).start();
-  }, []);
+  }, [opacity]);
 
   return (
     <View className={className}>
       <View className="rounded-lg bg-white p-4 shadow-md">
         <Text className="text-lg font-bold">Tips</Text>
-        <View className="mt-2 flex-row">
-          <Image source={tips.image} className="h-28 w-28 rounded-md" resizeMode="cover" />
+
+        <View className="mt-2 flex-row items-start">
+          <Ionicons name={categoryIconMap[category]} size={28} color="black" />
+
           <View className="ml-4 flex-1">
-            <Text className="mb-2 font-semibold">{tips.title}</Text>
-            <Text className="mb-2 text-gray-400">{tips.advice}</Text>
+            <Text className="mb-2 font-semibold">{title}</Text>
+            <Text className="mb-2 text-gray-400">{content}</Text>
           </View>
         </View>
 

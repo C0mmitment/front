@@ -6,6 +6,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { Slot } from 'expo-router';
 
 import { CompareProvider } from './contexts/compareContext';
+import { TipsProvider } from './contexts/tipsContext';
 import { useAppUuid } from './hooks/useAppUuid';
 import { CameraSettingsProvider } from '../app/contexts/cameraSettingsContext';
 
@@ -28,9 +29,11 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <CompareProvider>
-        <CameraSettingsProvider>
-          <Slot />
-        </CameraSettingsProvider>
+        <TipsProvider>
+          <CameraSettingsProvider>
+            <Slot />
+          </CameraSettingsProvider>
+        </TipsProvider>
       </CompareProvider>
     </GestureHandlerRootView>
   );
