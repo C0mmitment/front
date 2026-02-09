@@ -64,7 +64,7 @@ export default [
       ...reactHooks.configs.recommended.rules,
       ...prettierConfig.rules,
 
-      'prettier/prettier': 'error',
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
 
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-require-imports': 'off',

@@ -1,6 +1,6 @@
 // app/api/advice-api.ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import uuid from 'react-native-uuid';
 
 import * as ImageManipulator from 'expo-image-manipulator';
 
@@ -21,7 +21,7 @@ export type VisualCue = {
     | 'down_left'
     | 'down_right'
     | 'forward'
-    | 'backward'; // 矢印の方向
+    | 'backward';
 };
 
 // アドバイス
@@ -34,22 +34,31 @@ export type PhotoAdviceResponse = {
 // 緯度経度
 type LocationPayload = { lat: number; lon: number } | null;
 
+// uuidがない状態で送らないようにする用
+const UUID_KEY = 'app.install_uuid';
+async function getInstallUuid(): Promise<string> {
+  const v = await AsyncStorage.getItem(UUID_KEY);
+  if (!v) {
+    throw new Error('install_uuid is not initialized. Call useAppUuid on app startup.');
+  }
+  return v;
+}
+
 export async function getPhotoAdvice(
   imageUri: string,
   gathering: boolean,
   location: LocationPayload,
   category: CameraMode,
+  preAnalysis?: any,
 ): Promise<PhotoAdviceResponse> {
+  const installUuid = await getInstallUuid();
   const targetSize = 1024; // 変換サイズ
   const manipResult = await ImageManipulator.manipulateAsync(
     imageUri,
     // リサイズ
     [{ resize: { width: targetSize, height: targetSize } }],
     // JPEG、品質80%
-    {
-      compress: 0.8,
-      format: ImageManipulator.SaveFormat.JPEG,
-    },
+    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
   );
 
   // URIを処理後のものに置き換える
@@ -60,13 +69,16 @@ export async function getPhotoAdvice(
   const formData = new FormData();
 
   // 追加したいフィールド
-  formData.append('uuid', String(uuid.v4())); // uuid
+  formData.append('uuid', installUuid); // uuid
   formData.append('gathering', gathering ? 'true' : 'false'); // 現在地の利用許可
   formData.append('category', category); // カテゴリー
   if (gathering && location) {
     // 現在地
     formData.append('lat', String(location.lat));
     formData.append('long', String(location.lon));
+  }
+  if (preAnalysis) {
+    formData.append('pre_analysis', JSON.stringify(preAnalysis));
   }
 
   // 画像

@@ -30,7 +30,6 @@ export default function HomePage() {
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
-
   const aspectRatios: Record<string, number> = {
     '4:3': 3 / 4,
     '16:9': 9 / 16,

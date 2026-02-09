@@ -6,6 +6,11 @@ import { router } from 'expo-router';
 
 import type { CameraMode } from '../types/camera';
 
+type CompareParams = {
+  compare?: string;
+  pre_analysis?: string;
+};
+
 export function useCameraActions() {
   const cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<'back' | 'front'>('back');
@@ -24,7 +29,7 @@ export function useCameraActions() {
   }, []);
 
   // 写真撮影
-  async function takePicture(mode: CameraMode) {
+  async function takePicture(mode: CameraMode, opts?: CompareParams) {
     if (!cameraRef.current) return;
 
     const photo = await cameraRef.current.takePictureAsync({
@@ -38,6 +43,8 @@ export function useCameraActions() {
       params: {
         uri: photo.uri,
         mode: mode,
+        ...(opts?.compare ? { compare: opts.compare } : {}),
+        ...(opts?.pre_analysis ? { pre_analysis: opts.pre_analysis } : {}),
       },
     });
   }
