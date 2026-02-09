@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -18,12 +18,12 @@ import { getPhotoAdvice } from '../api/advice-api';
 import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
+import { useTips } from '../contexts/tipsContext';
 import { useLocationSetting } from '../hooks/useLocationSetting';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
 import type { VisualCue } from '../api/advice-api';
 import type { CameraMode } from '../types/camera';
-import type { Tips } from '../types/tips';
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
@@ -37,14 +37,10 @@ export default function AdvicePage() {
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
-
-  const [tips, setTips] = useState<Tips>({
-    title: 'ここはなに？',
-    category: 'app',
-    content: 'やくに立つかもしれない情報が書かれているよ！',
-  });
-
   const { locationEnabled, isLoaded } = useLocationSetting();
+
+  const { getRandomTip } = useTips();
+  const tips = useMemo(() => getRandomTip(), []);
 
   const showVisuals = !isLoading && !!visualCue;
 

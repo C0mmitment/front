@@ -1,4 +1,5 @@
 export type Tips = {
+  tips_id: string;
   title: string;
   content: string;
   category: TipsCategory;
