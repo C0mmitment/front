@@ -17,6 +17,7 @@ import * as Sharing from 'expo-sharing';
 
 import ArrowImg from '../../assets/arrow.png';
 import { getPhotoAdvice } from '../api/advice-api';
+import AdviceCard from '../components/AdviceCard/advice-card';
 import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
@@ -26,6 +27,7 @@ import { useLocationSetting } from '../hooks/useLocationSetting';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
 import type { VisualCue } from '../api/advice-api';
+import type { AdviceStatus } from '../types/advice';
 import type { CameraMode } from '../types/camera';
 
 export default function AdvicePage() {
@@ -36,6 +38,7 @@ export default function AdvicePage() {
   const [advice, setAdvice] = useState<string>(
     'ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。ここにAIからのアドバイスが表示されます。',
   );
+  const [status, setStatus] = useState<AdviceStatus>('first_time');
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const [ratio, setRatio] = useState<number>(1);
@@ -110,6 +113,7 @@ export default function AdvicePage() {
       if (enabled) clearCompare();
 
       setAdvice(res.analysis.advice);
+      setStatus(res.analysis.evaluation.status);
       setVisualCue(res.analysis.visual_cues?.[0] ?? null);
 
       lastAnalysisRef.current = res.analysis;
@@ -211,7 +215,7 @@ export default function AdvicePage() {
         {isLoading ? (
           <PhotoTips title={tips.title} content={tips.content} category={tips.category} />
         ) : (
-          <Text className="text-red-500">{advice}</Text>
+          <AdviceCard advice={advice} status={status} />
         )}
       </View>
 
