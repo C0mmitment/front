@@ -9,6 +9,8 @@ export type CameraSettingsContextType = {
   setFlash: React.Dispatch<React.SetStateAction<FlashMode>>;
   ratio: CameraRatio;
   setRatio: React.Dispatch<React.SetStateAction<CameraRatio>>;
+  grid: boolean;
+  setGrid: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const CameraSettingsContext = createContext<CameraSettingsContextType | undefined>(
@@ -18,8 +20,12 @@ export const CameraSettingsContext = createContext<CameraSettingsContextType | u
 export const CameraSettingsProvider = ({ children }: { children: ReactNode }) => {
   const [flash, setFlash] = useState<FlashMode>('off');
   const [ratio, setRatio] = useState<CameraRatio>('4:3');
+  const [grid, setGrid] = useState(false);
 
-  const value = useMemo(() => ({ flash, setFlash, ratio, setRatio }), [flash, ratio]);
+  const value = useMemo(
+    () => ({ flash, setFlash, ratio, setRatio, grid, setGrid }),
+    [flash, ratio, grid],
+  );
 
   return <CameraSettingsContext.Provider value={value}>{children}</CameraSettingsContext.Provider>;
 };

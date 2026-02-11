@@ -2,6 +2,7 @@ import React from 'react';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { View, Text, Pressable, Switch, TouchableOpacity } from 'react-native';
 
@@ -14,6 +15,8 @@ type Props = {
   onChangeFlash: (next: 'off' | 'on' | 'auto') => void;
   ratio: '4:3' | '1:1' | '16:9';
   onChangeRatio: (ratio: '4:3' | '1:1' | '16:9') => void;
+  grid: boolean;
+  onChangeGrid: (v: boolean) => void;
 };
 
 export default function SettingDrawer({
@@ -25,6 +28,8 @@ export default function SettingDrawer({
   onChangeFlash,
   ratio,
   onChangeRatio,
+  grid,
+  onChangeGrid,
 }: Props) {
   if (!visible) return null;
 
@@ -40,6 +45,11 @@ export default function SettingDrawer({
     const order: ('4:3' | '1:1' | '16:9')[] = ['4:3', '1:1', '16:9'];
     const next = order[(order.indexOf(ratio) + 1) % order.length];
     onChangeRatio(next);
+  };
+
+  // グリッド切り替え
+  const toggleGrid = () => {
+    onChangeGrid(!grid);
   };
 
   return (
@@ -64,6 +74,12 @@ export default function SettingDrawer({
           <TouchableOpacity onPress={nextRatio} className="flex-col items-center gap-2">
             <MaterialCommunityIcons name="aspect-ratio" size={24} color="black" />
             <Text>{ratio}</Text>
+          </TouchableOpacity>
+
+          {/* グリッド線 */}
+          <TouchableOpacity onPress={toggleGrid} className="flex-col items-center gap-2">
+            <MaterialIcons name="grid-3x3" size={24} color="black" />
+            <Text>{grid ? 'ON' : 'OFF'}</Text>
           </TouchableOpacity>
         </View>
 

@@ -14,6 +14,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 
 import { useCameraActions } from '../hooks/useCameraActions';
 import { useCameraSettings } from '../hooks/useCameraSettings';
+import CameraGrid from './components/camera-grid';
 import SettingDrawer from './components/setting-drawer';
 import ShutterScroll from './components/shutter-scroll';
 import { colors } from '../constans/color';
@@ -26,7 +27,7 @@ export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mode, setMode] = useState<CameraMode>('normal');
-  const { flash, setFlash, ratio, setRatio } = useCameraSettings();
+  const { flash, setFlash, ratio, setRatio, grid, setGrid } = useCameraSettings();
 
   const { cameraRef, facing, zoom, updateZoom, takePicture, openPhotoFolder, toggleCameraFacing } =
     useCameraActions();
@@ -98,7 +99,7 @@ export default function HomePage() {
     <SafeAreaView className="relative flex-1 bg-white">
       {/* 上部 UI */}
       <View className="absolute top-12 z-50 w-full flex-row justify-end px-4 py-5">
-        <TouchableOpacity onPress={() => setSettingsOpen(true)}>
+        <TouchableOpacity onPress={() => setSettingsOpen((prev) => !prev)}>
           <Ionicons name="settings-sharp" size={32} color={colors.secondary} />
         </TouchableOpacity>
       </View>
@@ -120,6 +121,7 @@ export default function HomePage() {
               flash={flash}
               ratio={ratio}
             />
+            <CameraGrid enabled={grid} />
           </View>
         </GestureDetector>
       </View>
@@ -147,6 +149,8 @@ export default function HomePage() {
         onChangeFlash={setFlash}
         ratio={ratio}
         onChangeRatio={setRatio}
+        grid={grid}
+        onChangeGrid={setGrid}
       />
     </SafeAreaView>
   );
