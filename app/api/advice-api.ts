@@ -16,10 +16,10 @@ export type VisualCue = {
     | 'right'
     | 'up'
     | 'down'
-    | 'up_left'
-    | 'up_right'
-    | 'down_left'
-    | 'down_right'
+    | 'up-left'
+    | 'up-right'
+    | 'down-left'
+    | 'down-right'
     | 'forward'
     | 'backward';
 };
@@ -78,7 +78,13 @@ export async function getPhotoAdvice(
     formData.append('long', String(location.lon));
   }
   if (preAnalysis) {
-    formData.append('pre_analysis', JSON.stringify(preAnalysis));
+    const data = {
+      reason: preAnalysis.reason,
+      advice: preAnalysis.advice,
+      category: preAnalysis.category,
+    };
+
+    formData.append('pre_analysis', JSON.stringify(data));
   }
 
   // 画像

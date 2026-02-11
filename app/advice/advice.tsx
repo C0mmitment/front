@@ -113,7 +113,7 @@ export default function AdvicePage() {
       if (enabled) clearCompare();
 
       setAdvice(res.analysis.advice);
-      setStatus(res.analysis.evaluation.status);
+      setStatus(res.analysis.evaluate);
       setVisualCue(res.analysis.visual_cues?.[0] ?? null);
 
       lastAnalysisRef.current = res.analysis;
