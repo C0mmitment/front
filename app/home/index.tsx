@@ -99,7 +99,7 @@ export default function HomePage() {
     <SafeAreaView className="relative flex-1 bg-white">
       {/* 上部 UI */}
       <View className="absolute top-12 z-50 w-full flex-row justify-end px-4 py-5">
-        <TouchableOpacity onPress={() => setSettingsOpen(true)}>
+        <TouchableOpacity onPress={() => setSettingsOpen((prev) => !prev)}>
           <Ionicons name="settings-sharp" size={32} color={colors.secondary} />
         </TouchableOpacity>
       </View>
