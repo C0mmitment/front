@@ -52,13 +52,13 @@ export async function getPhotoAdvice(
   preAnalysis?: any,
 ): Promise<PhotoAdviceResponse> {
   const installUuid = await getInstallUuid();
-  const targetSize = 1024; // 変換サイズ
+  const targetSize = 850; // 変換サイズ
   const manipResult = await ImageManipulator.manipulateAsync(
     imageUri,
     // リサイズ
-    [{ resize: { width: targetSize, height: targetSize } }],
+    [{ resize: { width: targetSize } }],
     // JPEG、品質80%
-    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
+    { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG },
   );
 
   // URIを処理後のものに置き換える
