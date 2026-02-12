@@ -14,6 +14,7 @@ import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
 import { useTips } from '../contexts/tipsContext';
+import CameraGrid from '../home/components/camera-grid';
 import { useAdvicePageData } from '../hooks/useAdvicePageData';
 import { useImageLayout } from '../hooks/useImageLayout';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
@@ -56,6 +57,8 @@ export default function AdvicePage() {
             <View style={{ width: fittedSize.w, height: fittedSize.h }} className="relative">
               {/* メイン画像 */}
               <Image source={{ uri }} className="h-full w-full" resizeMode="contain" />
+
+              <CameraGrid enabled={true} />
 
               {/* 枠 or 矢印 */}
               {shouldShowVisuals &&
