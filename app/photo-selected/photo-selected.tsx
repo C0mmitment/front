@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -13,15 +13,19 @@ import * as Sharing from 'expo-sharing';
 
 import ArrowImg from '../../assets/arrow.png';
 import { getPhotoAdvice } from '../api/advice-api';
+import AdviceCard from '../components/AdviceCard/advice-card';
 import IconButton from '../components/icon-button/icon-button';
 import PhotoTips from '../components/Tips/tips';
 import { colors } from '../constans/color';
+import { useTips } from '../contexts/tipsContext';
 import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
 
 import type { VisualCue } from '../api/advice-api';
+import type { AdviceStatus } from '../types/advice';
 
 export default function PhotoSelectedPage() {
-  const [advice, setAdvice] = useState<string>();
+  const [advice, setAdvice] = useState<string>('ここにAIからのアドバイスが表示されます...');
+  const [status, setStatus] = useState<AdviceStatus>('first_time');
   const [isLoading, setIsLoading] = useState(false);
   const [visualCue, setVisualCue] = useState<VisualCue | null>(null);
   const { uri } = useLocalSearchParams<{ uri: string }>();
@@ -29,6 +33,9 @@ export default function PhotoSelectedPage() {
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
 
   const showVisuals = !isLoading && !!visualCue;
+
+  const { getRandomTip } = useTips();
+  const tips = useMemo(() => getRandomTip(), [getRandomTip]);
 
   const { arrowStyle, arrowPositionStyle, boxStyle, isDepth } = usePhotoAdviceVisuals({
     direction: visualCue?.direction,
@@ -89,6 +96,7 @@ export default function PhotoSelectedPage() {
       const res = await getPhotoAdvice(uri, false, null, 'normal');
 
       setAdvice(res.analysis.advice);
+      setStatus(res.analysis.status);
       setVisualCue(res.analysis.visual_cues?.[0] ?? null);
     } catch (e) {
       console.error(e);
@@ -147,7 +155,11 @@ export default function PhotoSelectedPage() {
 
       {/* Tips & アドバイス */}
       <View className="m-4">
-        {isLoading ? <PhotoTips /> : <Text className="text-red-500">{advice}</Text>}
+        {isLoading ? (
+          <PhotoTips title={tips.title} content={tips.content} category={tips.category} />
+        ) : (
+          <AdviceCard advice={advice} status={status} />
+        )}
       </View>
       <View className="flex flex-row justify-center gap-10 p-5">
         {/* AIに聞くボタン */}
