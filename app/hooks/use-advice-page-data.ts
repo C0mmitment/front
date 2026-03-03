@@ -9,7 +9,7 @@ import * as Sharing from 'expo-sharing';
 
 import { useLocationSetting } from './useLocationSetting';
 import { getPhotoAdvice, type VisualCue } from '../api/advice-api';
-import { useCompare } from '../contexts/compareContext';
+import { useCompare } from '../contexts/compare-context';
 
 import type { AdviceStatus } from '../types/advice';
 import type { CameraMode } from '../types/camera';

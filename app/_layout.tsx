@@ -5,10 +5,10 @@ import { View, ActivityIndicator } from 'react-native';
 
 import { Slot } from 'expo-router';
 
-import { CompareProvider } from './contexts/compareContext';
-import { TipsProvider } from './contexts/tipsContext';
-import { useAppUuid } from './hooks/useAppUuid';
-import { CameraSettingsProvider } from '../app/contexts/cameraSettingsContext';
+import { CompareProvider } from './contexts/compare-context';
+import { TipsProvider } from './contexts/tips-context';
+import { useAppUuid } from './hooks/use-app-uuid';
+import { CameraSettingsProvider } from './contexts/camera-settings-context';
 
 import '../global.css';
 

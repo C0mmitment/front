@@ -10,14 +10,14 @@ import { View, Alert, TouchableOpacity } from 'react-native';
 
 import { useCameraPermissions } from 'expo-camera';
 
-import { useCameraActions } from '../hooks/useCameraActions';
-import { useCameraSettings } from '../hooks/useCameraSettings';
-import { useFirstLaunchFlag } from '../hooks/useFirstLaunchFlag';
-import { useLocationSetting } from '../hooks/useLocationSetting';
+import { useCameraActions } from '../hooks/use-camera-actions';
+import { useCameraSettings } from '../hooks/use-camera-settings';
+import { useFirstLaunchFlag } from '../hooks/use-first-launch-flag';
+import { useLocationSetting } from '../hooks/use-location-setting';
 import CameraPreview from './components/camera-preview';
 import SettingDrawer from './components/setting-drawer';
 import ShutterScroll from './components/shutter-scroll';
-import { colors } from '../constans/color';
+import { colors } from '../constants/color';
 
 import type { CameraMode } from '../types/camera';
 
