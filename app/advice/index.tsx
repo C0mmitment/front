@@ -9,15 +9,15 @@ import { Image, Text, View, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 
 import ArrowImg from '../../assets/arrow.png';
-import AdviceCard from '../components/AdviceCard/advice-card';
+import AdviceCard from '../components/advice-card/advice-card';
 import IconButton from '../components/icon-button/icon-button';
-import PhotoTips from '../components/Tips/tips';
-import { colors } from '../constans/color';
-import { useTips } from '../contexts/tipsContext';
+import PhotoTips from '../components/tips/tips';
+import { colors } from '../constants/color';
+import { useTips } from '../contexts/tips-context';
 import CameraGrid from '../home/components/camera-grid';
-import { useAdvicePageData } from '../hooks/useAdvicePageData';
-import { useImageLayout } from '../hooks/useImageLayout';
-import { usePhotoAdviceVisuals } from '../hooks/usePhotoAdviceVisuals';
+import { useAdvicePageData } from '../hooks/use-advice-page-data';
+import { useImageLayout } from '../hooks/use-image-layout';
+import { usePhotoAdviceVisuals } from '../hooks/use-photo-advice-visuals';
 
 import type { CameraMode } from '../types/camera';
 

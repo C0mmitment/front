@@ -1,4 +1,4 @@
-// app/contexts/cameraSettingsContext.tsx
+// app/contexts/camera-settings-context.tsx
 import React, { createContext, useMemo, useState, ReactNode } from 'react';
 
 export type FlashMode = 'off' | 'on' | 'auto';
