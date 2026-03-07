@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 
 import { Dimensions, FlatList, TouchableOpacity, View, Image } from 'react-native';
 
-import { colors } from '../../constans/color';
+import { colors } from '../../constants/color';
 
 import type { CameraMode } from '../../types/camera';
 
