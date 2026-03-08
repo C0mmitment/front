@@ -27,22 +27,27 @@ app/
 ## 開発コマンド
 
 ### アプリの起動
+
 ```bash
 npm run start
 ```
 
 ### Storybookの起動
+
 モバイル実機/シミュレータ上でStorybookを有効にして起動します。
+
 ```bash
 npm run storybook
 ```
 
 Web版のStorybook（コンポーネントカタログ）を起動します。
+
 ```bash
 npm run storybook:web
 ```
 
 ### リンター・フォーマッタ
+
 ```bash
 # チェック
 npm run lint

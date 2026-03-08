@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { TextArea } from './TextArea';
+import { TextArea } from './text-area';
 
 import type { Meta, StoryObj } from '@storybook/react';
 

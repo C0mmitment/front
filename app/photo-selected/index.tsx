@@ -155,7 +155,7 @@ export default function PhotoSelectedPage() {
 
       {/* Tips & アドバイス */}
       <View className="m-4">
-        {isLoading ? (
+        {isLoading && tips ? (
           <PhotoTips title={tips.title} content={tips.content} category={tips.category} />
         ) : (
           <AdviceCard advice={advice} status={status} />

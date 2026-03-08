@@ -7,7 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 
-import { useLocationSetting } from './useLocationSetting';
+import { useLocationSetting } from './use-location-setting';
 import { getPhotoAdvice, type VisualCue } from '../api/advice-api';
 import { useCompare } from '../contexts/compare-context';
 
