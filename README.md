@@ -19,7 +19,7 @@ app/
 ├── components/          # 共有コンポーネント
 ├── constants/           # 定数定義 (color, themeなど)
 ├── contexts/            # Context API (Global State)
-├── features/            # 機能単位
+├── (features)/            # 機能単位
 ├── hooks/               # カスタムフック
 └── types/               # TypeScript 型定義
 ```
