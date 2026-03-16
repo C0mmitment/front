@@ -14,10 +14,10 @@ import IconButton from '../../components/icon-button/icon-button';
 import PhotoTips from '../../components/tips/tips';
 import { colors } from '../../constants/color';
 import { useTips } from '../../contexts/tips-context';
-import CameraGrid from '../home/components/camera-grid';
 import { useAdvicePageData } from '../../hooks/use-advice-page-data';
 import { useImageLayout } from '../../hooks/use-image-layout';
 import { usePhotoAdviceVisuals } from '../../hooks/use-photo-advice-visuals';
+import CameraGrid from '../home/components/camera-grid';
 
 import type { CameraMode } from '../../types/camera';
 
