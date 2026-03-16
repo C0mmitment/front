@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import { getTips } from '../api/tips-api';
+import { getTips } from '../(features)/home/api/tips-api';
 
 import type { Tips } from '../types/tips';
 

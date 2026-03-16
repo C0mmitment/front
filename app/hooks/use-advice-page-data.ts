@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 
 import { useLocationSetting } from './use-location-setting';
-import { getPhotoAdvice, type VisualCue } from '../api/advice-api';
+import { getPhotoAdvice, type VisualCue } from '../(features)/advice/api/advice-api';
 import { useCompare } from '../contexts/compare-context';
 
 import type { AdviceStatus } from '../types/advice';

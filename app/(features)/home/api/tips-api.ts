@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-import clientApi from './client-api';
+import clientApi from '../../../api/client-api';
 
-import type { Tips } from '../types/tips';
+import type { Tips } from '../../../types/tips';
 
 // APIレスポンスの型
 type GetTipsApiResponse = {

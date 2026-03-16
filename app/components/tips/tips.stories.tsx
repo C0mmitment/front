@@ -5,7 +5,7 @@ import PhotoTips from './tips';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof PhotoTips> = {
-  title: 'Tips',
+  title: 'Components/Tips',
   component: PhotoTips,
   decorators: [
     (Story) => (

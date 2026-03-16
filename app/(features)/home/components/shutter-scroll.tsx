@@ -2,9 +2,9 @@ import React, { useRef } from 'react';
 
 import { Dimensions, FlatList, TouchableOpacity, View, Image } from 'react-native';
 
-import { colors } from '../../constants/color';
+import { colors } from '../../../constants/color';
 
-import type { CameraMode } from '../../types/camera';
+import type { CameraMode } from '../../../types/camera';
 
 type Props = {
   selectedMode: CameraMode;
