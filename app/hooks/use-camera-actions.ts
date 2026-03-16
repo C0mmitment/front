@@ -39,7 +39,7 @@ export function useCameraActions() {
     });
 
     router.push({
-      pathname: '/advice/advice',
+      pathname: '/advice',
       params: {
         uri: photo.uri,
         mode: mode,
@@ -60,7 +60,7 @@ export function useCameraActions() {
       const uri = result.assets[0].uri;
 
       router.push({
-        pathname: '/photo-selected/photo-selected',
+        pathname: '/photo-selected',
         params: { uri },
       });
     }
