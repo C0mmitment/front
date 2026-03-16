@@ -12,7 +12,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 
 import ArrowImg from '../../../assets/arrow.png';
-import { getPhotoAdvice } from '../../api/advice-api';
+import { getPhotoAdvice } from '../advice/api/advice-api';
 import AdviceCard from '../../components/advice-card/advice-card';
 import IconButton from '../../components/icon-button/icon-button';
 import PhotoTips from '../../components/tips/tips';
@@ -20,7 +20,7 @@ import { colors } from '../../constants/color';
 import { useTips } from '../../contexts/tips-context';
 import { usePhotoAdviceVisuals } from '../../hooks/use-photo-advice-visuals';
 
-import type { VisualCue } from '../../api/advice-api';
+import type { VisualCue } from '../advice/api/advice-api';
 import type { AdviceStatus } from '../../types/advice';
 
 export default function PhotoSelectedPage() {
