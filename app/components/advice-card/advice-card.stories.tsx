@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import AdviceCard from './advice-card';
+import AdviceCard from '@/components/advice-card/advice-card';
 
 import type { Meta, StoryObj } from '@storybook/react';
 

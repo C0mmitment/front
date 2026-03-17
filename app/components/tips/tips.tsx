@@ -4,7 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { View, Text, Animated, Easing } from 'react-native';
 
-import type { TipsCategory } from '../../types/tips';
+import type { TipsCategory } from '@/types/tips';
 
 type PhotoTipsProps = {
   title: string;

@@ -2,9 +2,9 @@ import React, { useRef } from 'react';
 
 import { Dimensions, FlatList, TouchableOpacity, View, Image } from 'react-native';
 
-import { colors } from '../../../constants/color';
+import { colors } from '@/constants/color';
 
-import type { CameraMode } from '../../../types/camera';
+import type { CameraMode } from '@/types/camera';
 
 type Props = {
   selectedMode: CameraMode;
@@ -20,9 +20,9 @@ export default function ShutterScroll({
   className,
 }: Props) {
   const shutterButtons: { id: CameraMode; source: any; size: number }[] = [
-    { id: 'normal', source: require('../assets/shutter-circle.png'), size: 80 },
-    { id: 'person', source: require('../assets/shutter-people.png'), size: 80 },
-    { id: 'food', source: require('../assets/shutter-food.png'), size: 80 },
+    { id: 'normal', source: require('@/(features)/home/assets/shutter-circle.png'), size: 80 },
+    { id: 'person', source: require('@/(features)/home/assets/shutter-people.png'), size: 80 },
+    { id: 'food', source: require('@/(features)/home/assets/shutter-food.png'), size: 80 },
   ];
 
   const shutterWidth = 100;

@@ -7,12 +7,12 @@ import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 
-import { useLocationSetting } from './use-location-setting';
-import { getPhotoAdvice, type VisualCue } from '../(features)/advice/api/advice-api';
-import { useCompare } from '../contexts/compare-context';
+import { getPhotoAdvice, type VisualCue } from '@/(features)/advice/api/advice-api';
+import { useCompare } from '@/contexts/compare-context';
+import { useLocationSetting } from '@/hooks/use-location-setting';
 
-import type { AdviceStatus } from '../types/advice';
-import type { CameraMode } from '../types/camera';
+import type { AdviceStatus } from '@/types/advice';
+import type { CameraMode } from '@/types/camera';
 
 export function useAdvicePageData(uri: string | undefined, mode: CameraMode) {
   const [advice, setAdvice] = useState('ここにAIからのアドバイスが表示されます...');

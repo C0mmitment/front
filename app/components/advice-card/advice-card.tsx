@@ -4,7 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { View, Text } from 'react-native';
 
-import type { AdviceStatus } from '../../types/advice';
+import type { AdviceStatus } from '@/types/advice';
 
 type AdviceCardProps = {
   advice: string;

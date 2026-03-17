@@ -10,16 +10,16 @@ import { View, Alert, TouchableOpacity } from 'react-native';
 
 import { useCameraPermissions } from 'expo-camera';
 
-import CameraPreview from './components/camera-preview';
-import SettingDrawer from './components/setting-drawer';
-import ShutterScroll from './components/shutter-scroll';
-import { colors } from '../../constants/color';
-import { useCameraActions } from '../../hooks/use-camera-actions';
-import { useCameraSettings } from '../../hooks/use-camera-settings';
-import { useFirstLaunchFlag } from '../../hooks/use-first-launch-flag';
-import { useLocationSetting } from '../../hooks/use-location-setting';
+import CameraPreview from '@/(features)/home/components/camera-preview';
+import SettingDrawer from '@/(features)/home/components/setting-drawer';
+import ShutterScroll from '@/(features)/home/components/shutter-scroll';
+import { colors } from '@/constants/color';
+import { useCameraActions } from '@/hooks/use-camera-actions';
+import { useCameraSettings } from '@/hooks/use-camera-settings';
+import { useFirstLaunchFlag } from '@/hooks/use-first-launch-flag';
+import { useLocationSetting } from '@/hooks/use-location-setting';
 
-import type { CameraMode } from '../../types/camera';
+import type { CameraMode } from '@/types/camera';
 
 export default function HomePage() {
   const [permission, requestPermission] = useCameraPermissions();

@@ -8,7 +8,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-import type { VisualCue } from '../(features)/advice/api/advice-api';
+import type { VisualCue } from '@/(features)/advice/api/advice-api';
 
 type Direction = VisualCue['direction'];
 

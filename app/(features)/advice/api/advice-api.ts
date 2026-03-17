@@ -4,9 +4,9 @@ import axios from 'axios';
 
 import * as ImageManipulator from 'expo-image-manipulator';
 
-import clientApi from '../../../api/client-api';
+import clientApi from '@/api/client-api';
 
-import type { CameraMode } from '../../../types/camera';
+import type { CameraMode } from '@/types/camera';
 
 // 視覚的なアドバイス
 export type VisualCue = {

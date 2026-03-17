@@ -8,18 +8,18 @@ import { Image, Text, View, TouchableOpacity } from 'react-native';
 
 import { useLocalSearchParams, router } from 'expo-router';
 
-import ArrowImg from '../../../assets/arrow.png';
-import AdviceCard from '../../components/advice-card/advice-card';
-import IconButton from '../../components/icon-button/icon-button';
-import PhotoTips from '../../components/tips/tips';
-import { colors } from '../../constants/color';
-import { useTips } from '../../contexts/tips-context';
-import { useAdvicePageData } from '../../hooks/use-advice-page-data';
-import { useImageLayout } from '../../hooks/use-image-layout';
-import { usePhotoAdviceVisuals } from '../../hooks/use-photo-advice-visuals';
-import CameraGrid from '../home/components/camera-grid';
+import CameraGrid from '@/(features)/home/components/camera-grid';
+import AdviceCard from '@/components/advice-card/advice-card';
+import IconButton from '@/components/icon-button/icon-button';
+import PhotoTips from '@/components/tips/tips';
+import { colors } from '@/constants/color';
+import { useTips } from '@/contexts/tips-context';
+import { useAdvicePageData } from '@/hooks/use-advice-page-data';
+import { useImageLayout } from '@/hooks/use-image-layout';
+import { usePhotoAdviceVisuals } from '@/hooks/use-photo-advice-visuals';
+import ArrowImg from '@assets/arrow.png';
 
-import type { CameraMode } from '../../types/camera';
+import type { CameraMode } from '@/types/camera';
 
 export default function AdvicePage() {
   const { uri, mode } = useLocalSearchParams<{
