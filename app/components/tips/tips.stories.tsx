@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import PhotoTips from './tips';
+import PhotoTips from '@/components/tips/tips';
 
 import type { Meta, StoryObj } from '@storybook/react';
 

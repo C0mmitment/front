@@ -3,6 +3,16 @@ module.exports = function (api) {
   return {
     presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
     plugins: [
+      [
+        'babel-plugin-module-resolver',
+        {
+          root: ['.'],
+          alias: {
+            '@': './app',
+            '@assets': './assets',
+          },
+        },
+      ],
       ['babel-plugin-react-docgen-typescript', { exclude: 'node_modules' }],
       '@babel/plugin-proposal-export-namespace-from',
       'react-native-reanimated/plugin',

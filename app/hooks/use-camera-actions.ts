@@ -4,7 +4,7 @@ import { CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 
-import type { CameraMode } from '../types/camera';
+import type { CameraMode } from '@/types/camera';
 
 type CompareParams = {
   compare?: string;

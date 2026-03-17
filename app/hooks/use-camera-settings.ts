@@ -1,7 +1,7 @@
 // hooks/use-camera-settings.ts
 import { useContext } from 'react';
 
-import { CameraSettingsContext } from '../contexts/camera-settings-context';
+import { CameraSettingsContext } from '@/contexts/camera-settings-context';
 
 export const useCameraSettings = () => {
   const ctx = useContext(CameraSettingsContext);

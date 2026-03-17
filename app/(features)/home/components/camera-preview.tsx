@@ -7,7 +7,7 @@ import { View } from 'react-native';
 
 import { CameraView, CameraRatio } from 'expo-camera'; // CameraRatio を追加
 
-import CameraGrid from './camera-grid';
+import CameraGrid from '@/(features)/home/components/camera-grid';
 
 interface CameraPreviewProps {
   cameraRef: React.RefObject<any>;
